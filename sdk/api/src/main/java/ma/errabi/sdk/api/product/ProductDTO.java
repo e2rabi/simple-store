@@ -1,13 +1,13 @@
 package ma.errabi.sdk.api.product;
 
-public class ProductDto {
+public class ProductDTO {
     private int productId;
     private String name;
     private String description;
     private int weight;
     private String serviceAddress;
 
-    public ProductDto() {
+    public ProductDTO() {
     }
 
     public int getProductId() {
@@ -50,7 +50,7 @@ public class ProductDto {
         this.serviceAddress = serviceAddress;
     }
 
-    public ProductDto(int productId, String name, String description, int weight, String serviceAddress) {
+    public ProductDTO(int productId, String name, String description, int weight, String serviceAddress) {
         this.productId = productId;
         this.name = name;
         this.description = description;

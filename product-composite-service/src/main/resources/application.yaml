@@ -1,1 +1,14 @@
-spring.application.name=product-composite-service
+spring:
+  application:
+     name: product-composite-service
+
+app:
+  product-service:
+    host: localhost
+    port: 8000
+  review-service:
+    host: localhost
+    port: 8100
+  recommendation-service:
+    host: localhost
+    port: 8200
