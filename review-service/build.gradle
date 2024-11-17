@@ -7,12 +7,6 @@ plugins {
 group = 'ma.errabi.microservice.core.review'
 version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
-
 repositories {
 	mavenCentral()
 }
@@ -27,4 +21,15 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.named('bootJar') {
+	enabled = true
+}
+tasks.named('jar') {
+	enabled = false
 }

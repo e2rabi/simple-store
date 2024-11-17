@@ -1,4 +1,4 @@
 package ma.errabi.sdk.api.recommendation;
 
-public class RecommendationService {
+public class RecommendationDTO {
 }
