@@ -3,7 +3,13 @@ server:
 spring:
    application:
      name: product-service
-logging:
-  level:
-    root: info
-    ma.errabi.microservice: debug
+
+---
+spring:
+  application:
+    name: product-service
+  config:
+    activate:
+      on-profile: docker
+server:
+  port: 8080

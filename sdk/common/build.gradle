@@ -21,4 +21,5 @@ ext{
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springbootVersion}")
+    implementation project(':sdk:api')
 }

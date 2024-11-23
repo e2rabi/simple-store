@@ -1,4 +1,4 @@
-package ma.errabi.microservice.composite;
+package ma.errabi.microservice.composite.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ma.errabi.sdk.api.product.ProductDTO;
@@ -32,13 +32,13 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                                        String productServiceHost,
                                        @Value("${app.product-service.port}")
                                        int productServicePort,
-                                       @Value("${app.product-review-service.host}")
+                                       @Value("${app.review-service.host}")
                                        String productReviewServiceHost,
-                                       @Value("${app.product-review-service.port}")
+                                       @Value("${app.review-service.port}")
                                        int productReviewServicePort,
-                                       @Value("${app.product-recommendation-service.host}")
+                                       @Value("${app.recommendation-service.host}")
                                        String productRecommendationServiceHost,
-                                       @Value("${app.product-recommendation-service.port}")
+                                       @Value("${app.recommendation-service.port}")
                                        int productRecommendationServicePort) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
@@ -51,12 +51,12 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     }
     @Override
     public ProductDTO getProductById(Integer productId) {
-        String url = String.format("%s:%d/product/%d",productServiceHost,productServicePort, productId);
+        String url = String.format("%s/product/%d",productServiceHost, productId);
         return restTemplate.getForObject(url, ProductDTO.class);
     }
     @Override
     public List<RecommendationDTO> getRecommendations(Integer productId) {
-        String url = String.format("%s:%d/recommendation?productId=%d",productRecommendationServiceHost,productRecommendationServicePort, productId);
+        String url = String.format("%s/recommendation/%d",productRecommendationServiceHost, productId);
         ResponseEntity<List<RecommendationDTO>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -69,7 +69,7 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
 
     @Override
     public List<ReviewDTO> getReview(Integer productId) {
-        String url = String.format("%s:%d/review?productId=%d", productReviewServiceHost, productReviewServicePort, productId);
+        String url = String.format("%s/review/%d", productReviewServiceHost, productId);
         ResponseEntity<List<ReviewDTO>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,

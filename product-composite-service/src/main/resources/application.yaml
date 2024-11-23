@@ -1,7 +1,26 @@
+
+server:
+  port: 8080
+spring:
+  application:
+    name: product-composite-service
+app:
+  product-service:
+    host: http://localhost
+    port: 8000
+  review-service:
+    host: http://localhost
+    port: 8001
+  recommendation-service:
+    host: http://localhost
+    port: 8002
+---
 spring:
   application:
      name: product-composite-service
-
+  config:
+    activate:
+      on-profile: docker
 app:
   product-service:
     host: localhost

@@ -7,12 +7,6 @@ plugins {
 group = 'ma.errabi.microservice.core.recommendation'
 version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
-
 repositories {
 	mavenCentral()
 }
@@ -23,8 +17,21 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation project(':sdk:api')
+	implementation project(':sdk:common')
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.named('bootJar') {
+	enabled = true
+}
+tasks.named('jar') {
+	enabled = false
 }

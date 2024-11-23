@@ -1,4 +1,4 @@
-package ma.errabi.sdk.api.composite.product;
+package ma.errabi.sdk.api.composite;
 
 public class ReviewSummaryDTO {
 }

@@ -1,4 +1,4 @@
-package ma.errabi.sdk.util.exception.handler;
+package ma.errabi.sdk.util.exception;
 
-public class InvalidInputException {
+public class InvalidInputException extends RuntimeException {
 }
