@@ -14,9 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
+import java.util.logging.Logger;
+
 @Component
 public class ProductCompositeIntegration implements ProductResource, RecommendationResource, ReviewResource {
-
+    Logger logger = Logger.getLogger(ProductCompositeIntegration.class.getName());
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String productServiceHost;
@@ -52,6 +54,7 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     @Override
     public ProductDTO getProductById(Integer productId) {
         String url = String.format("%s/product/%d",productServiceHost, productId);
+        logger.info("url used to get product by id: " + url);
         return restTemplate.getForObject(url, ProductDTO.class);
     }
     @Override
