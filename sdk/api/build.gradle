@@ -20,5 +20,6 @@ ext{
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.1.0' // contains only annotations
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springbootVersion}")
 }
