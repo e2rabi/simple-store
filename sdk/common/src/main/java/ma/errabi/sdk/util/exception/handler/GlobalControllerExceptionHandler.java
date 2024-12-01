@@ -1,9 +1,9 @@
 package ma.errabi.sdk.util.exception.handler;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ma.errabi.sdk.util.exception.HttpErrorInfo;
 import ma.errabi.sdk.util.exception.InvalidInputException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,8 +17,8 @@ public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(InvalidInputException.class)
-    public @ResponseBody HttpErrorInfo handleInvalidInputException(InvalidInputException ex, ServerHttpRequest request){
-        log.info("Invalid request: " + request.getMethod() + " " + request.getURI());
-        return new HttpErrorInfo();
+    public @ResponseBody HttpErrorInfo handleInvalidInputException(InvalidInputException ex, HttpServletRequest request){
+        log.info("Invalid request: " + request.getMethod() + " " + request.getRequestURI());
+        return new HttpErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY,request.getRequestURI(),ex.getMessage());
     }
 }

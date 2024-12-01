@@ -14,16 +14,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "products")
 public class ProductEntity {
     @Id
-    private String id;
     @Indexed(unique = true)
-    private int productId;
+    private String id;
+   // private int productId;
     private String name;
-    private int weight;
+    private String description;
+    private double weight;
     @Version
     private int version;
-    public ProductEntity(int productId, String name, int weight) {
-        this.productId = productId;
-        this.name = name;
-        this.weight = weight;
-    }
 }

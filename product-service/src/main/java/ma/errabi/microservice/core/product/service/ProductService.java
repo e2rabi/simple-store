@@ -22,14 +22,16 @@ public class ProductService {
 
     public ProductDTO createProduct(ProductDTO productDTO) {
         try {
-            return productMapper.toDTO(productRepository.save(productMapper.toEntity(productDTO)));
-        }catch (DuplicateKeyException ex){
+            ProductDTO createdProduct =   productMapper.toDTO(productRepository.save(productMapper.toEntity(productDTO)));
+            createdProduct.setServiceAddress(serviceUtil.getServiceAddress());
+            return createdProduct;
+        }catch (Exception ex){
             log.error("Duplicate key for product id: {}",productDTO.getProductId());
             throw new InvalidInputException("Duplicate key for product id: "+productDTO.getProductId());
         }
     }
-    public ProductDTO getProductById(Integer productId) {
-        return productRepository.findByProductId(productId)
+    public ProductDTO getProductById(String productId) {
+        return productRepository.findById(productId)
                 .map(productMapper::toDTO)
                 .map(productDTO -> {
                     productDTO.setServiceAddress(serviceUtil.getServiceAddress());
@@ -37,8 +39,8 @@ public class ProductService {
                 })
                 .orElseThrow(() -> new EntityNotFoundException("No product found for productId: " + productId));
     }
-    public void deleteProduct(Integer productId) {
-        productRepository.findByProductId(productId)
+    public void deleteProduct(String productId) {
+        productRepository.findById(productId)
                          .ifPresent(productRepository::delete);
     }
 }

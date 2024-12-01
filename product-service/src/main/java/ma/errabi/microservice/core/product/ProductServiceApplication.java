@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 @Slf4j
 @SpringBootApplication
-@ComponentScan(basePackages = "ma.errabi")
+@ComponentScan(basePackages = "ma.errabi.*")
 public class ProductServiceApplication {
 
  public static void main(String[] args) {
