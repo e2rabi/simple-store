@@ -11,12 +11,16 @@ version = '0.0.1-SNAPSHOT'
 repositories {
 	mavenCentral()
 }
-
+ext{
+	lombokVersion = '1.18.22'
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.1.0'
-
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
 	implementation project(':sdk:api')
 	implementation project(':sdk:common')

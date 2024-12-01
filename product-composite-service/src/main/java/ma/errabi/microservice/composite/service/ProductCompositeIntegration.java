@@ -1,32 +1,37 @@
 package ma.errabi.microservice.composite.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import ma.errabi.sdk.api.composite.ProductAggregateDTO;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import ma.errabi.sdk.api.recommendation.RecommendationResource;
 import ma.errabi.sdk.api.review.ReviewDTO;
 import ma.errabi.sdk.api.review.ReviewResource;
+import ma.errabi.sdk.util.exception.EntityNotFoundException;
+import ma.errabi.sdk.util.exception.HttpErrorInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import java.util.List;
-import java.util.logging.Logger;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
+@Slf4j
 @Component
 public class ProductCompositeIntegration implements ProductResource, RecommendationResource, ReviewResource {
-    Logger logger = Logger.getLogger(ProductCompositeIntegration.class.getName());
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final String productServiceHost;
-    private final int productServicePort;
+    private final String productServiceUrl;
     private final String productReviewServiceHost;
-    private final int productReviewServicePort ;
     private final String productRecommendationServiceHost;
-    private final int productRecommendationServicePort;
 
     public ProductCompositeIntegration(RestTemplate restTemplate,
                                        ObjectMapper objectMapper,
@@ -44,19 +49,22 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                                        int productRecommendationServicePort) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
-        this.productServiceHost = String.format("%s:%d", productServiceHost, productServicePort);
-        this.productServicePort = productServicePort;
+        this.productServiceUrl = String.format("%s:%d", productServiceHost, productServicePort);
         this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
-        this.productReviewServicePort = productReviewServicePort;
-        this.productRecommendationServicePort = productRecommendationServicePort;
     }
     @Override
     public ProductDTO getProductById(Integer productId) {
-        String url = String.format("%s/product/%d",productServiceHost, productId);
-        logger.info("url used to get product by id: " + url);
+        String url = String.format("%s/product/%d", productServiceUrl, productId);
+        log.info("url used to get product by id: {}", url);
         return restTemplate.getForObject(url, ProductDTO.class);
     }
+
+    @Override
+    public void deleteProduct(Integer productId) {
+
+    }
+
     @Override
     public List<RecommendationDTO> getRecommendations(Integer productId) {
         String url = String.format("%s/recommendation/%d",productRecommendationServiceHost, productId);
@@ -81,5 +89,49 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                 }
         );
         return response.getBody();
+    }
+    public ProductDTO createProduct(ProductAggregateDTO body) {
+        try {
+            String url = productServiceUrl;
+            log.debug("Will post a new product to URL: {}", url);
+
+            ProductDTO product = restTemplate.postForObject(url, body, ProductDTO.class);
+            assert product != null;
+            log.debug("Created a product with id: {}", product.getProductId());
+
+            return product;
+
+        } catch (HttpClientErrorException ex) {
+            throw handleHttpClientException(ex);
+        }
+    }
+    public void deleteProduct(int productId) {
+        try {
+            String url = productServiceUrl + "/" + productId;
+            log.debug("Will call the deleteProduct API on URL: {}", url);
+
+            restTemplate.delete(url);
+
+        } catch (HttpClientErrorException ex) {
+            throw handleHttpClientException(ex);
+        }
+    }
+    private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
+        switch (Objects.requireNonNull(HttpStatus.resolve(ex.getStatusCode().value()))) {
+            case NOT_FOUND, UNPROCESSABLE_ENTITY:
+                return new EntityNotFoundException(getErrorMessage(ex));
+            default:
+                log.warn("Got an unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
+                log.warn("Error body: {}", ex.getResponseBodyAsString());
+                return ex;
+        }
+    }
+
+    private String getErrorMessage(HttpClientErrorException ex) {
+        try {
+            return objectMapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();
+        } catch (IOException e) {
+            return ex.getMessage();
+        }
     }
 }

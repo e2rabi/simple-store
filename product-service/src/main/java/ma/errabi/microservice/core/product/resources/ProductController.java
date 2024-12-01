@@ -19,4 +19,9 @@ public class ProductController implements ProductResource {
         return new ProductDTO(productId,"name","description",
                 123,serviceUtil.getServiceAddress());
     }
+
+    @Override
+    public void deleteProduct(Integer productId) {
+        System.out.println("Product deleted");
+    }
 }
