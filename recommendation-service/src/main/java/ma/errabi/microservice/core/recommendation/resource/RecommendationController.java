@@ -9,7 +9,7 @@ import java.util.List;
 @RestController
 public class RecommendationController implements RecommendationResource {
     @Override
-    public List<RecommendationDTO> getRecommendations(Integer productId) {
+    public List<RecommendationDTO> getRecommendations(String productId) {
         return List.of(new RecommendationDTO(1, "Author 1",  "Content 1"),
                 new RecommendationDTO(2, "Author 2",  "Content 2"));
     }

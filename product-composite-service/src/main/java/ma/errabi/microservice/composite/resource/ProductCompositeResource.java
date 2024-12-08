@@ -23,7 +23,7 @@ public class ProductCompositeResource implements ProductCompositeResources {
         this.serviceUtil = serviceUtil;
     }
     @Override
-    public ProductAggregateDTO getProductById(Integer productId) {
+    public ProductAggregateDTO getProductById(String productId) {
        ProductDTO productDTO =  integration.getProductById(productId);
        List<RecommendationDTO>  recommendationDTOS = integration.getRecommendations(productId);
        List<ReviewDTO> reviewDTOS = integration.getReview(productId);
@@ -31,10 +31,10 @@ public class ProductCompositeResource implements ProductCompositeResources {
     }
 
     @Override
-    public ProductDTO createProduct(ProductAggregateDTO body) {
+    public ProductDTO createProduct(ProductDTO body) {
       return   integration.createProduct(body);
     }
-    public void deleteProduct(int productId) {
+    public void deleteProduct(String productId) {
 
         log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
 

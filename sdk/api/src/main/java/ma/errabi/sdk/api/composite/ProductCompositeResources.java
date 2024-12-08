@@ -27,7 +27,7 @@ public interface ProductCompositeResources {
     @GetMapping(
             value = "/product-composite/{productId}",
             produces = "application/json")
-    ProductAggregateDTO getProductById(@PathVariable Integer productId);
+    ProductAggregateDTO getProductById(@PathVariable String productId);
 
     /**
      * Sample usage, see below.
@@ -48,7 +48,7 @@ public interface ProductCompositeResources {
     @PostMapping(
             value    = "/product-composite",
             consumes = "application/json")
-    ProductDTO createProduct(@RequestBody ProductAggregateDTO body);
+    ProductDTO createProduct(@RequestBody ProductDTO body);
 
     /**
      * Sample usage: "curl -X DELETE $HOST:$PORT/product-composite/1".
@@ -63,5 +63,5 @@ public interface ProductCompositeResources {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @DeleteMapping(value = "/product-composite/{productId}")
-    void deleteProduct(@PathVariable int productId);
+    void deleteProduct(@PathVariable String productId);
 }

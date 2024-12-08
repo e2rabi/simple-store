@@ -1,9 +1,16 @@
+
 server:
-  port: 8002
+    port: 8002
 spring:
   application:
     name: recommendation-service
-
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+logging:
+    level:
+      org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 ---
 spring:
   application:
@@ -11,5 +18,8 @@ spring:
   config:
     activate:
       on-profile: docker
+  data:
+    mongodb:
+      host: mongodb
 server:
   port: 8080

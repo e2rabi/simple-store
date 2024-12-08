@@ -2,7 +2,6 @@ package ma.errabi.microservice.composite.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import ma.errabi.sdk.api.composite.ProductAggregateDTO;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
@@ -54,19 +53,14 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
     }
     @Override
-    public ProductDTO getProductById(Integer productId) {
+    public ProductDTO getProductById(String productId) {
         String url = String.format("%s/product/%d", productServiceUrl, productId);
         log.info("url used to get product by id: {}", url);
         return restTemplate.getForObject(url, ProductDTO.class);
     }
 
     @Override
-    public void deleteProduct(Integer productId) {
-
-    }
-
-    @Override
-    public List<RecommendationDTO> getRecommendations(Integer productId) {
+    public List<RecommendationDTO> getRecommendations(String productId) {
         String url = String.format("%s/recommendation/%d",productRecommendationServiceHost, productId);
         ResponseEntity<List<RecommendationDTO>> response = restTemplate.exchange(
                 url,
@@ -79,7 +73,7 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     }
 
     @Override
-    public List<ReviewDTO> getReview(Integer productId) {
+    public List<ReviewDTO> getReview(String productId) {
         String url = String.format("%s/review/%d", productReviewServiceHost, productId);
         ResponseEntity<List<ReviewDTO>> response = restTemplate.exchange(
                 url,
@@ -90,7 +84,8 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
         );
         return response.getBody();
     }
-    public ProductDTO createProduct(ProductAggregateDTO body) {
+    @Override
+    public ProductDTO createProduct(ProductDTO body) {
         try {
             String url = productServiceUrl;
             log.debug("Will post a new product to URL: {}", url);
@@ -105,7 +100,8 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
             throw handleHttpClientException(ex);
         }
     }
-    public void deleteProduct(int productId) {
+    @Override
+    public void deleteProduct(String productId) {
         try {
             String url = productServiceUrl + "/" + productId;
             log.debug("Will call the deleteProduct API on URL: {}", url);
@@ -134,4 +130,5 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
             return ex.getMessage();
         }
     }
+
 }

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ReviewResource {
     @GetMapping(value = "/review/{productId}",produces = "application/json")
-    List<ReviewDTO> getReview(Integer productId);
+    List<ReviewDTO> getReview(String productId);
 
 }

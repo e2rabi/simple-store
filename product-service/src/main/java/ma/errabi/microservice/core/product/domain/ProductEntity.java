@@ -15,8 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ProductEntity {
     @Id
     @Indexed(unique = true)
-    private String id;
-   // private int productId;
+    private String productId;
     private String name;
     private String description;
     private double weight;

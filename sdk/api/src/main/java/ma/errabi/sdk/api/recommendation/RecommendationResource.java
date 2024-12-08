@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface RecommendationResource {
     @GetMapping(value = "/recommendation/{productId}",produces = "application/json")
-    List<RecommendationDTO> getRecommendations(Integer productId);
+    List<RecommendationDTO> getRecommendations(String productId);
 }
