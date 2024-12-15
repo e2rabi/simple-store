@@ -37,7 +37,7 @@ public class ProductService {
         return productRepository.findById(productId)
                 .map(productMapper::toDTO)
                 .map(productDTO -> {
-                    productDTO.setServiceAddress(serviceUtil.getServiceAddress());
+                    productDTO.setServiceAddress(serviceUtil.getServiceAddress()); // for testing purpose
                     return productDTO;
                 })
                 .orElseThrow(() -> new EntityNotFoundException("No product found for productId: " + productId));
@@ -45,9 +45,8 @@ public class ProductService {
     @Transactional
     public void deleteProduct(String productId) {
         productRepository.findById(productId)
-                .ifPresentOrElse(productRepository::delete, () -> {
-                    throw new EntityNotFoundException("No product found for productId: " + productId);
-                });
+                .ifPresentOrElse(productRepository::delete,
+                        () -> { throw new EntityNotFoundException("No product found for productId: " + productId); });
     }
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProducts(int pageNumber, int pageSize) {
