@@ -45,7 +45,9 @@ public class ProductService {
     @Transactional
     public void deleteProduct(String productId) {
         productRepository.findById(productId)
-                         .ifPresent(productRepository::delete);
+                .ifPresentOrElse(productRepository::delete, () -> {
+                    throw new EntityNotFoundException("No product found for productId: " + productId);
+                });
     }
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProducts(int pageNumber, int pageSize) {

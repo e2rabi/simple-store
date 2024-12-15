@@ -1,8 +1,11 @@
 package ma.errabi.sdk.util.exception;
 
 import java.time.ZonedDateTime;
+
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+@Data
 public class HttpErrorInfo {
     private final ZonedDateTime timestamp;
     private final String path;
@@ -23,23 +26,4 @@ public class HttpErrorInfo {
         this.message = message;
     }
 
-    public ZonedDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public int getStatus() {
-        return httpStatus.value();
-    }
-
-    public String getError() {
-        return httpStatus.getReasonPhrase();
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

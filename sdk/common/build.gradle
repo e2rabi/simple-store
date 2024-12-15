@@ -16,11 +16,15 @@ repositories {
 
 ext{
     springbootVersion = '3.3.5'
+    lombokVersion = '1.18.22'
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springbootVersion}")
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
     implementation project(':sdk:api')
 }
