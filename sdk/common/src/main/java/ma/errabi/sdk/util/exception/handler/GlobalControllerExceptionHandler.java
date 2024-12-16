@@ -27,4 +27,10 @@ public class GlobalControllerExceptionHandler {
         log.error("Resource not found: {} {}", request.getMethod(), request.getRequestURI());
         return new HttpErrorInfo(HttpStatus.NOT_FOUND,request.getRequestURI(),ex.getMessage());
     }
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public @ResponseBody HttpErrorInfo handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request){
+        log.error("Invalid request: {} {}", request.getMethod(), request.getRequestURI());
+        return new HttpErrorInfo(HttpStatus.NOT_FOUND,request.getRequestURI(),ex.getMessage());
+    }
 }
