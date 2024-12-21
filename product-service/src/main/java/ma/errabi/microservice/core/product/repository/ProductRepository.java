@@ -1,10 +1,12 @@
 package ma.errabi.microservice.core.product.repository;
 
 import ma.errabi.microservice.core.product.domain.ProductEntity;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface ProductRepository extends PagingAndSortingRepository<ProductEntity, String>, CrudRepository<ProductEntity, String> {
+public interface ProductRepository extends  ReactiveCrudRepository<ProductEntity, String> {
+    Flux<ProductEntity> findAllBy(Pageable pageable);
 }

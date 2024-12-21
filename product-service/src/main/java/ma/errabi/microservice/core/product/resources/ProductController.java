@@ -6,6 +6,7 @@ import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class ProductController implements ProductResource {
     private final ProductService productService;
 
     @Override
-    public ProductDTO getProductById(String productId) {
+    public Mono<ProductDTO> getProductById(String productId) {
        return productService.getProductById(productId);
     }
     @Override
@@ -22,11 +23,11 @@ public class ProductController implements ProductResource {
       productService.deleteProduct(productId);
     }
     @Override
-    public ProductDTO createProduct(ProductDTO body) {
+    public Mono<ProductDTO> createProduct(ProductDTO body) {
         return productService.createProduct(body);
     }
     @Override
-    public Page<ProductDTO> getAllProducts(int pageNumber, int pageSize) {
+    public Mono<Page<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
         return productService.getAllProducts(pageNumber, pageSize);
     }
 }
