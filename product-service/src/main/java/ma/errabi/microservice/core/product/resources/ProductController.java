@@ -19,8 +19,8 @@ public class ProductController implements ProductResource {
        return productService.getProductById(productId);
     }
     @Override
-    public void deleteProduct(String productId) {
-      productService.deleteProduct(productId);
+    public Mono<Void> deleteProduct(String productId) {
+      return productService.deleteProduct(productId);
     }
     @Override
     public Mono<ProductDTO> createProduct(ProductDTO body) {

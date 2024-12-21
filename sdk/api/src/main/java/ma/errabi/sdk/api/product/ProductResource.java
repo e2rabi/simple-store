@@ -9,7 +9,7 @@ public interface ProductResource {
     @GetMapping(value = "/product/{productId}",produces = "application/json")
     Mono<ProductDTO> getProductById(@PathVariable String productId);
     @DeleteMapping(value = "/product/{productId}")
-    void deleteProduct(@PathVariable String productId);
+    Mono<Void> deleteProduct(@PathVariable String productId);
     @PostMapping(value = "/product",consumes = "application/json")
     Mono<ProductDTO> createProduct(@RequestBody ProductDTO body);
     @GetMapping(value = "/product",consumes = "application/json")

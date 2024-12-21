@@ -1,20 +1,22 @@
 package ma.errabi.microservice.core.review.domain;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.annotation.Id;
 
 @Data
-@Entity
-@Table(name = "reviews",indexes = {@Index(name = "reviews_unique_idx",unique = true,columnList = "productId,reviewId")})
+@Table("reviews")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ReviewEntity {
     @Id
-    @GeneratedValue
-    private int id;
-    private int reviewId;
+    private Integer id;
     private int productId;
     private String author;
     private String subject;
     private String content;
-    @Version
-    private int version;
+
 }

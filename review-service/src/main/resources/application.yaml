@@ -2,7 +2,16 @@ server:
   port: 8001
 spring:
   application:
-    name: review-service
+        name: review-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/review
+    username: admin
+    password: admin
+  sql:
+    init:
+      mode: always
+
+
 
 ---
 spring:

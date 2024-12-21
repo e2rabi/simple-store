@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @Service
@@ -41,11 +42,12 @@ public class ProductService {
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("No product found for productId: " + productId)));
     }
     @Transactional
-    public void deleteProduct(String productId) {
-       ProductEntity product = productRepository.findById(productId)
-                .switchIfEmpty(Mono.error(new EntityNotFoundException("No product found for productId: " + productId))).block();
-        assert product != null;
-        productRepository.deleteById(product.getProductId()).block();
+    public Mono<Void> deleteProduct(String productId) {
+        return productRepository.findById(productId)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("No product found for productId: " + productId)))
+                .publishOn(Schedulers.boundedElastic())
+                .doOnNext(product -> productRepository.delete(product).subscribe())
+                .then();
     }
 
     @Transactional(readOnly = true)
