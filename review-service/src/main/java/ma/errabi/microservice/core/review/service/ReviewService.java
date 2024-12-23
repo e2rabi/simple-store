@@ -9,7 +9,6 @@ import ma.errabi.sdk.util.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,7 +19,6 @@ import reactor.core.publisher.Mono;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
-    private final DatabaseClient databaseClient;
 
     public Mono<Void> deleteReviews(int productId) {
         try {
@@ -41,5 +39,9 @@ public class ReviewService {
                 .map(reviewEntities -> new PageImpl<>(reviewEntities, pageable, reviewEntities.size()))
                 .map(page -> page.map(reviewMapper::toDTO))
                 .flux();
+    }
+    public Flux<ReviewDTO> getReview(String productId) {
+        return reviewRepository.findByProductId(Integer.parseInt(productId))
+                .map(reviewMapper::toDTO);
     }
 }

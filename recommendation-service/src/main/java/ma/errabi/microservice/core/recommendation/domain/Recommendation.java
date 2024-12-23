@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(collection = "recommendations")
 @CompoundIndex(name = "prod-rec-id",unique = true,def = "{'productId':1,'recommendationId':1}")
-public class RecommendationEntity {
+public class Recommendation {
     @Id
     private String recommendationId;
     private String productId;

@@ -12,115 +12,99 @@ import ma.errabi.sdk.util.exception.EntityNotFoundException;
 import ma.errabi.sdk.util.exception.HttpErrorInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Component
 public class ProductCompositeIntegration implements ProductResource, RecommendationResource, ReviewResource {
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
     private final ObjectMapper objectMapper;
     private final String productServiceUrl;
     private final String productReviewServiceHost;
     private final String productRecommendationServiceHost;
 
-    public ProductCompositeIntegration(RestTemplate restTemplate,
-                                       ObjectMapper objectMapper,
-                                       @Value("${app.product-service.host}")
-                                       String productServiceHost,
-                                       @Value("${app.product-service.port}")
-                                       int productServicePort,
-                                       @Value("${app.review-service.host}")
-                                       String productReviewServiceHost,
-                                       @Value("${app.review-service.port}")
-                                       int productReviewServicePort,
-                                       @Value("${app.recommendation-service.host}")
-                                       String productRecommendationServiceHost,
-                                       @Value("${app.recommendation-service.port}")
-                                       int productRecommendationServicePort) {
-        this.restTemplate = restTemplate;
+    public ProductCompositeIntegration(WebClient webClient, ObjectMapper objectMapper,
+                                       @Value("${app.product-service.host}") String productServiceHost,
+                                       @Value("${app.product-service.port}") int productServicePort,
+                                       @Value("${app.review-service.host}") String productReviewServiceHost,
+                                       @Value("${app.review-service.port}") int productReviewServicePort,
+                                       @Value("${app.recommendation-service.host}") String productRecommendationServiceHost,
+                                       @Value("${app.recommendation-service.port}") int productRecommendationServicePort) {
+        this.webClient = webClient;
         this.objectMapper = objectMapper;
         this.productServiceUrl = String.format("%s:%d", productServiceHost, productServicePort);
         this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
     }
+
     @Override
-    public ProductDTO getProductById(String productId) {
-        String url = String.format("%s/product/%d", productServiceUrl, productId);
+    public Mono<ProductDTO> getProductById(String productId) {
+        String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.info("url used to get product by id: {}", url);
-        return restTemplate.getForObject(url, ProductDTO.class);
+        return null;
     }
 
     @Override
-    public List<RecommendationDTO> getRecommendations(String productId) {
-        String url = String.format("%s/recommendation/%d",productRecommendationServiceHost, productId);
-        ResponseEntity<List<RecommendationDTO>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-        return response.getBody();
+    public Flux<RecommendationDTO> getRecommendations(String productId) {
+        String url = String.format("%s/recommendation/%s", productRecommendationServiceHost, productId);
+        return webClient.get().uri(url).retrieve().bodyToFlux(RecommendationDTO.class);
     }
 
     @Override
-    public List<ReviewDTO> getReview(String productId) {
+    public Mono<RecommendationDTO> createRecommendation(RecommendationDTO dto) {
+        return null;
+    }
+
+    @Override
+    public Mono<Void> deleteRecommendations(String productId) {
+        return null;
+    }
+
+    @Override
+    public Flux<ReviewDTO> getReview(String productId) {
         String url = String.format("%s/review/%d", productReviewServiceHost, productId);
-        ResponseEntity<List<ReviewDTO>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-        return response.getBody();
+        return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
     }
+
     @Override
-    public ProductDTO createProduct(ProductDTO body) {
-        try {
-            String url = productServiceUrl;
-            log.debug("Will post a new product to URL: {}", url);
-
-            ProductDTO product = restTemplate.postForObject(url, body, ProductDTO.class);
-            assert product != null;
-            log.debug("Created a product with id: {}", product.getProductId());
-
-            return product;
-
-        } catch (HttpClientErrorException ex) {
-            throw handleHttpClientException(ex);
-        }
+    public Mono<ProductDTO> createProduct(ProductDTO body) {
+        String url = productServiceUrl;
+        log.debug("Will post a new product to URL: {}", url);
+        return webClient.post().uri(url).bodyValue(body).retrieve().bodyToMono(ProductDTO.class)
+                .onErrorMap(HttpClientErrorException.class, this::handleHttpClientException);
     }
+
     @Override
-    public void deleteProduct(String productId) {
-        try {
-            String url = productServiceUrl + "/" + productId;
-            log.debug("Will call the deleteProduct API on URL: {}", url);
-
-            restTemplate.delete(url);
-
-        } catch (HttpClientErrorException ex) {
-            throw handleHttpClientException(ex);
-        }
+    public Mono<Page<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
+        String url = String.format("%s?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
+        log.debug("Will call the getAllProducts API on URL: {}", url);
+        return webClient.get().uri(url).retrieve().bodyToMono(new ParameterizedTypeReference<>() {});
     }
+
+    @Override
+    public Mono<Void> deleteProduct(String productId) {
+        String url = productServiceUrl + "/" + productId;
+        log.debug("Will call the deleteProduct API on URL: {}", url);
+        return webClient.delete().uri(url).retrieve().toBodilessEntity().then()
+                .onErrorMap(HttpClientErrorException.class, this::handleHttpClientException);
+    }
+
     private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
-        switch (Objects.requireNonNull(HttpStatus.resolve(ex.getStatusCode().value()))) {
-            case NOT_FOUND, UNPROCESSABLE_ENTITY:
-                return new EntityNotFoundException(getErrorMessage(ex));
-            default:
-                log.warn("Got an unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
-                log.warn("Error body: {}", ex.getResponseBodyAsString());
-                return ex;
+        HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+        if (status == HttpStatus.NOT_FOUND || status == HttpStatus.UNPROCESSABLE_ENTITY) {
+            return new EntityNotFoundException(getErrorMessage(ex));
         }
+        log.warn("Got an unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
+        log.warn("Error body: {}", ex.getResponseBodyAsString());
+        return ex;
     }
 
     private String getErrorMessage(HttpClientErrorException ex) {
@@ -130,5 +114,4 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
             return ex.getMessage();
         }
     }
-
 }
