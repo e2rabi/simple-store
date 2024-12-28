@@ -2,14 +2,13 @@ package ma.errabi.microservice.core.product.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.errabi.microservice.core.product.domain.ProductEntity;
 import ma.errabi.microservice.core.product.repository.ProductRepository;
 import ma.errabi.microservice.core.product.mapper.ProductMapper;
+import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.util.ServiceUtil;
 import ma.errabi.sdk.util.exception.EntityNotFoundException;
 import ma.errabi.sdk.util.exception.TechnicalException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -51,12 +50,12 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Mono<Page<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
+    public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         return productRepository.findAllBy(pageRequest)
                 .collectList()
                 .zipWith(productRepository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageRequest, tuple.getT2()))
-                .map(page -> page.map(productMapper::toDTO));
+                .map(page -> new CustomPage<>(page.map(productMapper::toDTO)));
     }
 }

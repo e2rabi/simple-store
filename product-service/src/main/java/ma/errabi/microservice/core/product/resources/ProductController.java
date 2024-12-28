@@ -2,6 +2,7 @@ package ma.errabi.microservice.core.product.resources;
 
 import lombok.RequiredArgsConstructor;
 import ma.errabi.microservice.core.product.service.ProductService;
+import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ public class ProductController implements ProductResource {
         return productService.createProduct(body);
     }
     @Override
-    public Mono<Page<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
+    public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
         return productService.getAllProducts(pageNumber, pageSize);
     }
 }

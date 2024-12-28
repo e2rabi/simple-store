@@ -2,6 +2,7 @@ package ma.errabi.microservice.composite.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
@@ -13,7 +14,7 @@ import ma.errabi.sdk.util.exception.TechnicalException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -46,7 +47,9 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     public Mono<ProductDTO> getProductById(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.debug("Will call the getProduct API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToMono(ProductDTO.class)
+        return webClient.get().uri(url)
+                .retrieve()
+                .bodyToMono(ProductDTO.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
                     log.error("Product with productId: {} not found", productId);
                     return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
@@ -79,18 +82,26 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     public Mono<ProductDTO> createProduct(ProductDTO body) {
         String url = String.format("%s/product", productServiceUrl);
         log.debug("Will post a new product to URL: {}", url);
-        return webClient.post().uri(url).bodyValue(body).retrieve().bodyToMono(ProductDTO.class)
+        return webClient.post().uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(ProductDTO.class)
                 .onErrorResume(WebClientResponseException.class, ex -> {
                     log.error("Create product failed: {}", ex.toString());
                     return Mono.error(new TechnicalException(ex.getMessage()));
                 });
     }
-
     @Override
-    public Mono<Page<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
-        String url = String.format("%s?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
+    public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
+        String url = String.format("%s/products?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
         log.debug("Will call the getAllProducts API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToMono(new ParameterizedTypeReference<>() {});
+        return webClient.get()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<>() {
+                });
     }
 
     @Override
