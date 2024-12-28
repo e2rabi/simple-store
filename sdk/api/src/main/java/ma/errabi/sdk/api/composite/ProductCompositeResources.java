@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import ma.errabi.sdk.api.product.ProductDTO;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @Tag(name = "Product Composite REST API", description = "REST API for composite product information.")
 public interface ProductCompositeResources {
@@ -25,9 +26,9 @@ public interface ProductCompositeResources {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @GetMapping(
-            value = "/product-composite/{productId}",
+            value = "/product-composite/product/{productId}",
             produces = "application/json")
-    ProductAggregateDTO getProductById(@PathVariable String productId);
+    Mono<ProductDTO> getProductById(@PathVariable String productId);
 
     /**
      * Sample usage, see below.
@@ -46,9 +47,9 @@ public interface ProductCompositeResources {
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
     @PostMapping(
-            value    = "/product-composite",
+            value    = "/product-composite/product",
             consumes = "application/json")
-    ProductDTO createProduct(@RequestBody ProductDTO body);
+    Mono<ProductDTO> createProduct(@RequestBody ProductDTO body);
 
     /**
      * Sample usage: "curl -X DELETE $HOST:$PORT/product-composite/1".
@@ -62,6 +63,6 @@ public interface ProductCompositeResources {
             @ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
             @ApiResponse(responseCode = "422", description = "${api.responseCodes.unprocessableEntity.description}")
     })
-    @DeleteMapping(value = "/product-composite/{productId}")
-    void deleteProduct(@PathVariable String productId);
+    @DeleteMapping(value = "/product-composite/product/{productId}")
+    Mono<Void> deleteProduct(@PathVariable String productId);
 }

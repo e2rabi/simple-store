@@ -9,24 +9,22 @@ import ma.errabi.sdk.api.recommendation.RecommendationResource;
 import ma.errabi.sdk.api.review.ReviewDTO;
 import ma.errabi.sdk.api.review.ReviewResource;
 import ma.errabi.sdk.util.exception.EntityNotFoundException;
-import ma.errabi.sdk.util.exception.HttpErrorInfo;
+import ma.errabi.sdk.util.exception.TechnicalException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 
 @Slf4j
 @Component
 public class ProductCompositeIntegration implements ProductResource, RecommendationResource, ReviewResource {
     private final WebClient webClient;
-    private final ObjectMapper objectMapper;
     private final String productServiceUrl;
     private final String productReviewServiceHost;
     private final String productRecommendationServiceHost;
@@ -39,7 +37,6 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                                        @Value("${app.recommendation-service.host}") String productRecommendationServiceHost,
                                        @Value("${app.recommendation-service.port}") int productRecommendationServicePort) {
         this.webClient = webClient;
-        this.objectMapper = objectMapper;
         this.productServiceUrl = String.format("%s:%d", productServiceHost, productServicePort);
         this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
@@ -48,8 +45,12 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     @Override
     public Mono<ProductDTO> getProductById(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
-        log.info("url used to get product by id: {}", url);
-        return null;
+        log.debug("Will call the getProduct API on URL: {}", url);
+        return webClient.get().uri(url).retrieve().bodyToMono(ProductDTO.class)
+                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
+                    log.error("Product with productId: {} not found", productId);
+                    return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
+                });
     }
 
     @Override
@@ -60,12 +61,12 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
 
     @Override
     public Mono<RecommendationDTO> createRecommendation(RecommendationDTO dto) {
-        return null;
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
     public Mono<Void> deleteRecommendations(String productId) {
-        return null;
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
@@ -76,10 +77,13 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
 
     @Override
     public Mono<ProductDTO> createProduct(ProductDTO body) {
-        String url = productServiceUrl;
+        String url = String.format("%s/product", productServiceUrl);
         log.debug("Will post a new product to URL: {}", url);
         return webClient.post().uri(url).bodyValue(body).retrieve().bodyToMono(ProductDTO.class)
-                .onErrorMap(HttpClientErrorException.class, this::handleHttpClientException);
+                .onErrorResume(WebClientResponseException.class, ex -> {
+                    log.error("Create product failed: {}", ex.toString());
+                    return Mono.error(new TechnicalException(ex.getMessage()));
+                });
     }
 
     @Override
@@ -91,27 +95,12 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
 
     @Override
     public Mono<Void> deleteProduct(String productId) {
-        String url = productServiceUrl + "/" + productId;
+        String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.debug("Will call the deleteProduct API on URL: {}", url);
-        return webClient.delete().uri(url).retrieve().toBodilessEntity().then()
-                .onErrorMap(HttpClientErrorException.class, this::handleHttpClientException);
-    }
-
-    private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
-        HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
-        if (status == HttpStatus.NOT_FOUND || status == HttpStatus.UNPROCESSABLE_ENTITY) {
-            return new EntityNotFoundException(getErrorMessage(ex));
-        }
-        log.warn("Got an unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
-        log.warn("Error body: {}", ex.getResponseBodyAsString());
-        return ex;
-    }
-
-    private String getErrorMessage(HttpClientErrorException ex) {
-        try {
-            return objectMapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();
-        } catch (IOException e) {
-            return ex.getMessage();
-        }
+        return webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
+                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
+                    log.error("Delete failed product with productId: {} not found", productId);
+                    return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
+                });
     }
 }
