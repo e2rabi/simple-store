@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecommendationDTO {
     private String productId;
-    private String recommendationId;
+    private String id;
     private String author;
     private String content;
     private int rating;

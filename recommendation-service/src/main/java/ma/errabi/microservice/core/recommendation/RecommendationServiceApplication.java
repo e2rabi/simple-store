@@ -8,6 +8,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
+
+import java.net.URI;
 
 @Slf4j
 @SpringBootApplication
@@ -22,8 +26,29 @@ public class RecommendationServiceApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) {
-		String mongoDbHost = context.getEnvironment().getProperty("spring.data.mongodb.host");
-		String mongoDbPort= context.getEnvironment().getProperty("spring.data.mongodb.port");
-		log.info("Connected to MongoDb : {}-{}",mongoDbHost,mongoDbPort);
+		DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
+				.endpointOverride(URI.create("http://localhost:8000"))
+				.build();
+
+		CreateTableRequest request = CreateTableRequest.builder()
+				.tableName("Recommendation")
+				.keySchema(KeySchemaElement.builder()
+						.attributeName("id")
+						.keyType(KeyType.HASH)
+						.build())
+				.attributeDefinitions(AttributeDefinition.builder()
+						.attributeName("id")
+						.attributeType(ScalarAttributeType.S)
+						.build())
+				.provisionedThroughput(ProvisionedThroughput.builder()
+						.readCapacityUnits(5L)
+						.writeCapacityUnits(5L)
+						.build())
+				.build();
+
+		//dynamoDbClient.createTable(request);
+		System.out.println("Table created successfully!");
+		String mongoDbHost = context.getEnvironment().getProperty("amazon.dynamodb.endpoint");
+		log.info("Connected to dynamodb : {}",mongoDbHost);
 	}
 }

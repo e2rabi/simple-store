@@ -1,6 +1,15 @@
 
 server:
     port: 8002
+
+aws:
+  region: us-west-2
+  dynamodb:
+     endpoint: http://localhost:8000/
+     accessKey: admin
+     secretKey: admin
+     sessionToken:
+
 spring:
   application:
     name: recommendation-service
@@ -9,8 +18,11 @@ spring:
       host: localhost
       port: 27017
 logging:
-    level:
-      org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+  level:
+    com:
+      amazonaws:
+        services:
+          dynamodbv2: DEBUG
 ---
 spring:
   application:
