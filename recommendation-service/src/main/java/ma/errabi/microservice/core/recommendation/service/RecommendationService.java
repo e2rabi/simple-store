@@ -1,5 +1,6 @@
 package ma.errabi.microservice.core.recommendation.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.microservice.core.recommendation.domain.Recommendation;
@@ -8,6 +9,7 @@ import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -23,20 +25,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecommendationService {
     private final RecommendationMapper mapper;
+    private DynamoDbEnhancedClient enhancedClient ;
 
-    private DynamoDbClient getClient() {
+    @PostConstruct
+    private void init() {
         Region region = Region.US_EAST_1;
-        return DynamoDbClient.builder()
+        DynamoDbClient client =  DynamoDbClient.builder()
                 .region(region)
                 .endpointOverride(URI.create("http://localhost:8000"))
+                .build();
+        enhancedClient = DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(client)
                 .build();
     }
 
     public List<RecommendationDTO> getAllRecommendations() {
-        DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-                .dynamoDbClient(getClient())
-                .build();
-
         try {
             DynamoDbTable<Recommendation> table = enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
             Iterator<Recommendation> results = table.scan().items().iterator();
@@ -58,8 +61,7 @@ public class RecommendationService {
             return itemList.stream().map(mapper::toDTO).toList() ;
 
         } catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+           log.error("An error occurred while loading recommendations: {}", e.getMessage());
         }
         return null;
     }
@@ -68,10 +70,6 @@ public class RecommendationService {
     }
     public RecommendationDTO createRecommendation(RecommendationDTO item) {
         try {
-            DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-                    .dynamoDbClient(getClient())
-                    .build();
-
             DynamoDbTable<Recommendation> workTable = enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
             String myGuid = java.util.UUID.randomUUID().toString();
             Recommendation record = new Recommendation();
@@ -85,12 +83,21 @@ public class RecommendationService {
             return item;
 
         } catch (DynamoDbException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+           log.error("An error occurred while creating recommendation: {}", e.getMessage());
         }
         return null;
     }
   public RecommendationDTO getRecommendations(String  id) {
-     throw new UnsupportedOperationException("Not implemented yet");
+        try{
+            final DynamoDbTable<Recommendation> recommendationTable =
+                    enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
+            Recommendation result = recommendationTable.getItem(r -> r.key(Key.builder()
+                    .partitionValue(id)
+                    .build()));
+            return mapper.toDTO(result);
+        }catch (DynamoDbException e) {
+          log.error("error loading recommendation with id: {}",id);
+        }
+        return null;
   }
 }

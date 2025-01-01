@@ -6,8 +6,8 @@ import java.util.List;
 
 
 public interface RecommendationResource {
-    @GetMapping(value = "/recommendation/{productId}",produces = "application/json")
-    RecommendationDTO getRecommendations(@PathVariable String productId);
+    @GetMapping(value = "/recommendation/{id}",produces = "application/json")
+    RecommendationDTO getRecommendations(@PathVariable String id);
     @PostMapping(value = "/recommendation",consumes = "application/json")
     RecommendationDTO createRecommendation(@RequestBody RecommendationDTO dto);
     @DeleteMapping(value = "/recommendation/{productId}")
