@@ -3,12 +3,9 @@ server:
     port: 8002
 
 aws:
-  region: us-west-2
   dynamodb:
+     region: us-east-1
      endpoint: http://localhost:8000/
-     accessKey: admin
-     secretKey: admin
-     sessionToken:
 
 spring:
   application:

@@ -10,8 +10,8 @@ public interface RecommendationResource {
     RecommendationDTO getRecommendations(@PathVariable String id);
     @PostMapping(value = "/recommendation",consumes = "application/json")
     RecommendationDTO createRecommendation(@RequestBody RecommendationDTO dto);
-    @DeleteMapping(value = "/recommendation/{productId}")
-    void deleteRecommendations(@PathVariable String productId);
+    @DeleteMapping(value = "/recommendation/{id}")
+    void deleteRecommendations(@PathVariable String id);
     @GetMapping(value = "/recommendation",produces = "application/json")
     List<RecommendationDTO> getAllRecommendations();
 }
