@@ -1,5 +1,6 @@
 package ma.errabi.sdk.api.recommendation;
 
+import ma.errabi.sdk.api.common.CustomPage;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface RecommendationResource {
     void deleteRecommendations(@PathVariable String id);
     @GetMapping(value = "/recommendation",produces = "application/json")
     List<RecommendationDTO> getAllRecommendations();
+    @GetMapping(value = "/recommendation/rating",produces = "application/json")
+    CustomPage<RecommendationDTO> scanRecommendationByRating(@RequestParam Integer minRating, @RequestParam Integer maxRating);
 }

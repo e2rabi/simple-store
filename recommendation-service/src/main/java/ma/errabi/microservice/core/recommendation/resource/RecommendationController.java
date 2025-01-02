@@ -3,6 +3,7 @@ package ma.errabi.microservice.core.recommendation.resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.microservice.core.recommendation.service.RecommendationService;
+import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import ma.errabi.sdk.api.recommendation.RecommendationResource;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +37,10 @@ public class RecommendationController implements RecommendationResource {
     public List<RecommendationDTO> getAllRecommendations() {
         log.debug("getAllRecommendations: tries to get all recommendations");
         return recommendationService.getAllRecommendations();
+    }
+    @Override
+    public CustomPage<RecommendationDTO> scanRecommendationByRating(Integer minRating, Integer maxRating) {
+        log.debug("scanRecommendationByRating: tries to get recommendations by rating");
+        return recommendationService.scanSyncRecommendationRating(minRating,maxRating);
     }
 }

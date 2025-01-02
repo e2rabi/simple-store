@@ -5,21 +5,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.microservice.core.recommendation.domain.Recommendation;
 import ma.errabi.microservice.core.recommendation.mapper.RecommendationMapper;
+import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.*;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static software.amazon.awssdk.enhanced.dynamodb.internal.AttributeValues.numberValue;
 
 @Slf4j
 @Service
@@ -115,4 +117,50 @@ public class RecommendationService {
         }
         return null;
   }
+  public RecommendationDTO updateRecommendation(RecommendationDTO item) {
+        try {
+            log.debug("Updating recommendation with id: {}", item.getId());
+            DynamoDbTable<Recommendation> workTable = enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
+            Recommendation record = new Recommendation();
+            record.setProductId(item.getProductId());
+            record.setId(item.getId());
+            record.setRating(item.getRating());
+            record.setAuthor(item.getAuthor());
+            record.setContent(item.getContent());
+            workTable.putItem(record);
+            return item;
+        } catch (DynamoDbException e) {
+            log.error("An error occurred while updating recommendation: {}", e.getMessage());
+        }
+        return null;
+    }
+    public CustomPage<RecommendationDTO> scanSyncRecommendationRating(Integer minRating, Integer maxRating) {
+        DynamoDbTable<Recommendation> productCatalog = enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
+        Map<String, AttributeValue> expressionValues = Map.of(
+                ":min_rating", numberValue(minRating),
+                ":max_rating", numberValue(maxRating));
+
+        ScanEnhancedRequest request = ScanEnhancedRequest.builder()
+                .consistentRead(true)
+                .attributesToProject("id", "productId", "author", "rating","content")
+                .filterExpression(Expression.builder()
+                        .expression("rating >= :min_rating AND rating <= :max_rating")
+                        .expressionValues(expressionValues)
+                        .build())
+                .build();
+        PageIterable<Recommendation> pagedResults = productCatalog.scan(request);
+        log.info("page count: {}", pagedResults.items().stream().count());
+
+        pagedResults.stream().forEach(p -> p.items().stream()
+                .sorted(Comparator.comparing(Recommendation::getRating))
+                .forEach(
+                        item -> log.info(item.toString())
+                ));
+        List<RecommendationDTO> recommendationDTOList = pagedResults.stream()
+                .flatMap(page -> page.items().stream())
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+
+        return new CustomPage<>(recommendationDTOList,pagedResults.items().stream().count());
+    }
 }

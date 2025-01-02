@@ -20,4 +20,9 @@ public class CustomPage<T> {
         this.totalElements = page.getTotalElements();
         this.pageNumber = page.getNumber();
     }
+
+    public CustomPage(List<T> content, long totalElements) {
+        this.content = content;
+        this.totalElements = totalElements;
+    }
 }

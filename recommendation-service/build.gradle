@@ -22,7 +22,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'software.amazon.awssdk:dynamodb:2.21.20'
     implementation 'software.amazon.awssdk:dynamodb-enhanced:2.21.20'
-    implementation 'software.amazon.awssdk:ses:2.21.20'
+	implementation 'org.springframework.data:spring-data-commons:3.2.3' // Use the latest version
+	implementation 'software.amazon.awssdk:ses:2.21.20'
     implementation 'software.amazon.awssdk:rdsdata:2.21.20'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
