@@ -6,6 +6,8 @@ import ma.errabi.microservice.core.recommendation.service.RecommendationService;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import ma.errabi.sdk.api.recommendation.RecommendationResource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -41,6 +43,12 @@ public class RecommendationController implements RecommendationResource {
     @Override
     public CustomPage<RecommendationDTO> scanRecommendationByRating(Integer minRating, Integer maxRating) {
         log.debug("scanRecommendationByRating: tries to get recommendations by rating");
+        recommendationService.scanByRecommendationByAuthor("errabi");
         return recommendationService.scanSyncRecommendationRating(minRating,maxRating);
+    }
+    @GetMapping(value = "/recommendation/author/{author}",produces = "application/json")
+    public CustomPage<RecommendationDTO> scanRecommendationByAuthor(@PathVariable String author) {
+        log.debug("scanRecommendationByAuthor: tries to get recommendations by author");
+       return recommendationService.scanByRecommendationByAuthor(author);
     }
 }

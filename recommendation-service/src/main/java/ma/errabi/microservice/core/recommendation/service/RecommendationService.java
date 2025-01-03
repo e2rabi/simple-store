@@ -9,7 +9,9 @@ import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.*;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.regions.Region;
@@ -139,7 +141,6 @@ public class RecommendationService {
         Map<String, AttributeValue> expressionValues = Map.of(
                 ":min_rating", numberValue(minRating),
                 ":max_rating", numberValue(maxRating));
-
         ScanEnhancedRequest request = ScanEnhancedRequest.builder()
                 .consistentRead(true)
                 .attributesToProject("id", "productId", "author", "rating","content")
@@ -149,18 +150,31 @@ public class RecommendationService {
                         .build())
                 .build();
         PageIterable<Recommendation> pagedResults = productCatalog.scan(request);
-        log.info("page count: {}", pagedResults.items().stream().count());
-
-        pagedResults.stream().forEach(p -> p.items().stream()
-                .sorted(Comparator.comparing(Recommendation::getRating))
-                .forEach(
-                        item -> log.info(item.toString())
-                ));
         List<RecommendationDTO> recommendationDTOList = pagedResults.stream()
                 .flatMap(page -> page.items().stream())
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
-
         return new CustomPage<>(recommendationDTOList,pagedResults.items().stream().count());
+    }
+    public CustomPage<RecommendationDTO> scanByRecommendationByAuthor(String author) {
+        DynamoDbTable<Recommendation> productCatalog = enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
+        DynamoDbIndex<Recommendation> index = productCatalog.index("recommendation_by_author");
+
+        Map<String, AttributeValue> expressionValues = Map.of(
+                ":author", AttributeValue.builder().s(author).build());
+        ScanEnhancedRequest request = ScanEnhancedRequest.builder()
+                .consistentRead(true)
+                .attributesToProject("id", "productId", "author", "rating", "content")
+                .filterExpression(Expression.builder()
+                        .expression("author = :author")
+                        .expressionValues(expressionValues)
+                        .build())
+                .build();
+        SdkIterable<Page<Recommendation>> pagedResults = index.scan(request);
+        List<RecommendationDTO> recommendationDTOList = pagedResults.stream()
+                .flatMap(page -> page.items().stream())
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        return new CustomPage<>(recommendationDTOList,pagedResults.stream().count());
     }
 }
