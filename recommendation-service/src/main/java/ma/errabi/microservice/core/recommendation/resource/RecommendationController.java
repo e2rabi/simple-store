@@ -19,9 +19,9 @@ public class RecommendationController implements RecommendationResource {
     private final RecommendationService recommendationService;
 
     @Override
-    public RecommendationDTO getRecommendations(String id) {
+    public RecommendationDTO getRecommendations(String id,String productId) {
         log.debug("getRecommendations: tries to get recommendations for the product with productId: {}", id);
-       return recommendationService.getRecommendations(id);
+       return recommendationService.getRecommendations(id,productId);
     }
 
     @Override
@@ -41,14 +41,13 @@ public class RecommendationController implements RecommendationResource {
         return recommendationService.getAllRecommendations();
     }
     @Override
-    public CustomPage<RecommendationDTO> scanRecommendationByRating(Integer minRating, Integer maxRating) {
+    public CustomPage<RecommendationDTO> getRecommendationByRating(Integer minRating, Integer maxRating) {
         log.debug("scanRecommendationByRating: tries to get recommendations by rating");
-        recommendationService.scanByRecommendationByAuthor("errabi");
         return recommendationService.scanSyncRecommendationRating(minRating,maxRating);
     }
-    @GetMapping(value = "/recommendation/author/{author}",produces = "application/json")
-    public CustomPage<RecommendationDTO> scanRecommendationByAuthor(@PathVariable String author) {
+    @GetMapping(value = "/recommendation/product/{productId}",produces = "application/json")
+    public CustomPage<RecommendationDTO> getRecommendationByProductId(@PathVariable String productId) {
         log.debug("scanRecommendationByAuthor: tries to get recommendations by author");
-       return recommendationService.scanByRecommendationByAuthor(author);
+       return recommendationService.scanByRecommendationByProductId(productId);
     }
 }

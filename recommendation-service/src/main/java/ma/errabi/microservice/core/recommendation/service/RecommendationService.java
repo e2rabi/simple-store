@@ -105,20 +105,21 @@ public class RecommendationService {
         }
         return null;
     }
-  public RecommendationDTO getRecommendations(String  id) {
-        try{
-            log.debug("Loading recommendation with id: {}", id);
+    public RecommendationDTO getRecommendations(String id, String productId) {
+        try {
+            log.debug("Loading recommendation with id: {} and productId: {}", id, productId);
             final DynamoDbTable<Recommendation> recommendationTable =
                     enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
             Recommendation result = recommendationTable.getItem(r -> r.key(Key.builder()
                     .partitionValue(id)
+                    .sortValue(productId)
                     .build()));
             return mapper.toDTO(result);
-        }catch (DynamoDbException e) {
-          log.error("error loading recommendation with id: {}",id,e);
+        } catch (DynamoDbException e) {
+            log.error("Error loading recommendation with id: {} and productId: {}", id, productId, e);
         }
         return null;
-  }
+    }
   public RecommendationDTO updateRecommendation(RecommendationDTO item) {
         try {
             log.debug("Updating recommendation with id: {}", item.getId());
@@ -156,17 +157,17 @@ public class RecommendationService {
                 .collect(Collectors.toList());
         return new CustomPage<>(recommendationDTOList,pagedResults.items().stream().count());
     }
-    public CustomPage<RecommendationDTO> scanByRecommendationByAuthor(String author) {
+    public CustomPage<RecommendationDTO> scanByRecommendationByProductId(String productId) {
         DynamoDbTable<Recommendation> productCatalog = enhancedClient.table("Recommendation", TableSchema.fromBean(Recommendation.class));
         DynamoDbIndex<Recommendation> index = productCatalog.index("recommendation_by_author");
 
         Map<String, AttributeValue> expressionValues = Map.of(
-                ":author", AttributeValue.builder().s(author).build());
+                ":productId", AttributeValue.builder().s(productId).build());
         ScanEnhancedRequest request = ScanEnhancedRequest.builder()
                 .consistentRead(true)
                 .attributesToProject("id", "productId", "author", "rating", "content")
                 .filterExpression(Expression.builder()
-                        .expression("author = :author")
+                        .expression("productId = :productId")
                         .expressionValues(expressionValues)
                         .build())
                 .build();

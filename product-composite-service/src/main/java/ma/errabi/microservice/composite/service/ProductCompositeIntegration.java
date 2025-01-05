@@ -3,6 +3,7 @@ package ma.errabi.microservice.composite.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.sdk.api.common.CustomPage;
+import ma.errabi.sdk.api.composite.ProductAggregateDTO;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
@@ -11,7 +12,6 @@ import ma.errabi.sdk.api.review.ReviewDTO;
 import ma.errabi.sdk.api.review.ReviewResource;
 import ma.errabi.sdk.util.exception.EntityNotFoundException;
 import ma.errabi.sdk.util.exception.TechnicalException;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -20,6 +20,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 
 @Slf4j
@@ -56,21 +58,6 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                 });
     }
 
-    @Override
-    public Flux<RecommendationDTO> getRecommendations(String productId) {
-        String url = String.format("%s/recommendation/%s", productRecommendationServiceHost, productId);
-        return webClient.get().uri(url).retrieve().bodyToFlux(RecommendationDTO.class);
-    }
-
-    @Override
-    public Mono<RecommendationDTO> createRecommendation(RecommendationDTO dto) {
-        throw new NotImplementedException("Not implemented");
-    }
-
-    @Override
-    public Mono<Void> deleteRecommendations(String productId) {
-        throw new NotImplementedException("Not implemented");
-    }
 
     @Override
     public Flux<ReviewDTO> getReview(String productId) {
@@ -107,11 +94,86 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     @Override
     public Mono<Void> deleteProduct(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
+        deleteRecommendations(productId);
         log.debug("Will call the deleteProduct API on URL: {}", url);
-        return webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
+        var response =  webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
                     log.error("Delete failed product with productId: {} not found", productId);
                     return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
                 });
+        deleteRecommendations(productId);
+        return response;
+    }
+
+    @Override
+    public RecommendationDTO getRecommendations(String id,String productId) {
+      String url = String.format("%s/recommendation/%s/product/%s", productRecommendationServiceHost, id,productId);
+      log.debug("Will call the getRecommendations API on URL: {}", url);
+        return webClient.get().uri(url)
+                .retrieve()
+                .bodyToMono(RecommendationDTO.class)
+                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
+                    log.error("Recommendation with productId: {} not found", id);
+                    return Mono.error(new EntityNotFoundException("Recommendation with productId: " + id + " not found"));
+                }).block();
+    }
+    public CustomPage<RecommendationDTO> getRecommendationByProductId(String productId) {
+        String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost, productId);
+        log.debug("Will call the getRecommendationByProductId API on URL: {}", url);
+        return webClient.get().uri(url)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<CustomPage<RecommendationDTO>>() {
+                })
+                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
+                    log.error("error getting recommendation by productId: {} not found", productId);
+                    return Mono.error(new EntityNotFoundException("Recommendation with productId: " + productId + " not found"));
+                }).block();
+    }
+
+    @Override
+    public RecommendationDTO createRecommendation(RecommendationDTO dto) {
+        String url = String.format("%s/recommendation", productRecommendationServiceHost);
+        log.debug("Will post a new recommendation to URL: {}", url);
+        return webClient.post().uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve()
+                .bodyToMono(RecommendationDTO.class)
+                .onErrorResume(WebClientResponseException.class, ex -> {
+                    log.error("Create recommendation failed: {}", ex.toString());
+                    return Mono.error(new TechnicalException(ex.getMessage()));
+                }).block();
+    }
+
+    public ProductAggregateDTO getProductAggregate(String productId) {
+        ProductDTO product = getProductById(productId).block();
+        CustomPage<RecommendationDTO> recommendations = getRecommendationByProductId(productId);
+        return  ProductAggregateDTO.builder()
+                .recommendations(recommendations.getContent())
+                .productId(product.getProductId())
+                .name(product.getName())
+                .weight(product.getWeight())
+                .description(product.getDescription())
+                .build();
+    }
+    @Override
+    public void deleteRecommendations(String id) {
+        String url = String.format("%s/recommendation/%s", productRecommendationServiceHost, id);
+        log.debug("Will call the deleteRecommendations API on URL: {}", url);
+        webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
+                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
+                    log.error("Delete failed recommendation with id: {} not found", id);
+                    return Mono.error(new EntityNotFoundException("Recommendation with id: " + id + " not found"));
+                }).block();
+    }
+
+    @Override
+    public List<RecommendationDTO> getAllRecommendations() {
+        return List.of();
+    }
+
+    @Override
+    public CustomPage<RecommendationDTO> getRecommendationByRating(Integer minRating, Integer maxRating) {
+        return null;
     }
 }
