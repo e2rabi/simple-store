@@ -39,7 +39,7 @@ public class ReviewController implements ReviewResource {
     }
 
     @Override
-    @GetMapping(value = "/review/{productId}",produces = "application/json")
+    @GetMapping("/review/{productId}")
     public Flux<ReviewDTO> getReview(@PathVariable String productId) {
         return reviewService.getReview(productId);
     }

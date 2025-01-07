@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReviewDTO {
     private int id;
-    private int productId;
+    private String productId;
     private String author;
     private String subject;
     private String content;

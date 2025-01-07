@@ -19,19 +19,20 @@ public class ProductCompositeResource implements ProductCompositeResources {
     private final ProductCompositeIntegration integration;
 
     @Override
-    @GetMapping(value = "/product-composite/product/{productId}", produces = "application/json")
-    public Mono<ProductDTO> getProductById(@PathVariable String productId) {
-       return integration.getProductById(productId);
-    }
-    @Override
     @PostMapping(value    = "/product-composite/product",consumes = "application/json")
     public Mono<ProductDTO> createProduct(@RequestBody ProductDTO body) {
-      return integration.createProduct(body);
+        return integration.createProduct(body);
     }
 
     @DeleteMapping(value = "/product-composite/product/{productId}")
     public Mono<Void> deleteProduct(@PathVariable String productId) {
-       return integration.deleteProduct(productId);
+        return integration.deleteProduct(productId);
+    }
+
+    @Override
+    @GetMapping(value = "/product-composite/product/{productId}", produces = "application/json")
+    public Mono<ProductDTO> getProductById(@PathVariable String productId) {
+       return integration.getProductById(productId);
     }
 
     @GetMapping(value = "/product-composite/products")

@@ -75,7 +75,7 @@ public class RecommendationServiceApplication implements ApplicationRunner {
 						.build())
 				.build();
 
-	    //dynamoDbClient.createTable(request);
+	    dynamoDbClient.createTable(request);
 		log.info("Table created successfully!");
 		String mongoDbHost = context.getEnvironment().getProperty("aws.dynamodb.endpoint");
 		log.info("Connected to dynamodb : {}",mongoDbHost);

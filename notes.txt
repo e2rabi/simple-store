@@ -1,0 +1,14 @@
+
+
+   Create products
+   Delete product.  —> delete all recommendations
+   getProductById —> getAll recommendation
+   getAllProduct  --> getAll recommendation
+
+   create recommendation
+   delete recommendation
+   get recommendations by product id
+
+   create review
+   delete review
+   get reviews by product id

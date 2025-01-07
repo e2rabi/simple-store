@@ -13,7 +13,7 @@ import org.springframework.data.annotation.Id;
 public class Review {
     @Id
     private Integer id;
-    private int productId;
+    private String productId;
     private String author;
     private String subject;
     private String content;

@@ -5,7 +5,6 @@ import ma.errabi.microservice.core.product.service.ProductService;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.product.ProductResource;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 

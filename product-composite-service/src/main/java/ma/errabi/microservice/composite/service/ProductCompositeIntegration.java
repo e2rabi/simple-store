@@ -61,7 +61,7 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
 
     @Override
     public Flux<ReviewDTO> getReview(String productId) {
-        String url = String.format("%s/review/%d", productReviewServiceHost, productId);
+        String url = String.format("%s/review/%s", productReviewServiceHost, productId);
         return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
     }
 
@@ -105,18 +105,6 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
         return response;
     }
 
-    @Override
-    public RecommendationDTO getRecommendations(String id,String productId) {
-      String url = String.format("%s/recommendation/%s/product/%s", productRecommendationServiceHost, id,productId);
-      log.debug("Will call the getRecommendations API on URL: {}", url);
-        return webClient.get().uri(url)
-                .retrieve()
-                .bodyToMono(RecommendationDTO.class)
-                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
-                    log.error("Recommendation with productId: {} not found", id);
-                    return Mono.error(new EntityNotFoundException("Recommendation with productId: " + id + " not found"));
-                }).block();
-    }
     public CustomPage<RecommendationDTO> getRecommendationByProductId(String productId) {
         String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost, productId);
         log.debug("Will call the getRecommendationByProductId API on URL: {}", url);
@@ -148,9 +136,11 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     public ProductAggregateDTO getProductAggregate(String productId) {
         ProductDTO product = getProductById(productId).block();
         CustomPage<RecommendationDTO> recommendations = getRecommendationByProductId(productId);
+        List<ReviewDTO> reviewDTOS =  getReview(productId).collectList().block();
         return  ProductAggregateDTO.builder()
                 .recommendations(recommendations.getContent())
                 .productId(product.getProductId())
+                .reviews(reviewDTOS)
                 .name(product.getName())
                 .weight(product.getWeight())
                 .description(product.getDescription())
@@ -167,13 +157,4 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                 }).block();
     }
 
-    @Override
-    public List<RecommendationDTO> getAllRecommendations() {
-        return List.of();
-    }
-
-    @Override
-    public CustomPage<RecommendationDTO> getRecommendationByRating(Integer minRating, Integer maxRating) {
-        return null;
-    }
 }

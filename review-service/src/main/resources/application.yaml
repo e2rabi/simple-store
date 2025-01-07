@@ -4,7 +4,7 @@ spring:
   application:
         name: review-service
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/review
+    url: r2dbc:postgresql://localhost:5432/postgres
     username: admin
     password: admin
   sql:
