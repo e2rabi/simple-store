@@ -19,6 +19,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.data:spring-data-commons:3.2.3' // Use the latest version
 	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.1.0'
+	implementation 'org.springframework.cloud:spring-cloud-starter-stream-kafka:4.2.0'
+
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

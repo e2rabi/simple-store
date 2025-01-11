@@ -10,9 +10,12 @@ import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import ma.errabi.sdk.api.recommendation.RecommendationResource;
 import ma.errabi.sdk.api.review.ReviewDTO;
 import ma.errabi.sdk.api.review.ReviewResource;
-import ma.errabi.sdk.util.exception.EntityNotFoundException;
-import ma.errabi.sdk.util.exception.TechnicalException;
+import ma.errabi.sdk.event.Event;
+import ma.errabi.sdk.event.EventPublisher;
+import ma.errabi.sdk.exception.EntityNotFoundException;
+import ma.errabi.sdk.exception.TechnicalException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -26,11 +29,12 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class ProductCompositeIntegration implements ProductResource, RecommendationResource, ReviewResource {
+public class ProductCompositeIntegration  {
     private final WebClient webClient;
     private final String productServiceUrl;
     private final String productReviewServiceHost;
     private final String productRecommendationServiceHost;
+    private final EventPublisher eventPublisher;
 
     public ProductCompositeIntegration(WebClient webClient, ObjectMapper objectMapper,
                                        @Value("${app.product-service.host}") String productServiceHost,
@@ -38,14 +42,14 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                                        @Value("${app.review-service.host}") String productReviewServiceHost,
                                        @Value("${app.review-service.port}") int productReviewServicePort,
                                        @Value("${app.recommendation-service.host}") String productRecommendationServiceHost,
-                                       @Value("${app.recommendation-service.port}") int productRecommendationServicePort) {
+                                       @Value("${app.recommendation-service.port}") int productRecommendationServicePort, StreamBridge streamBridge, EventPublisher eventPublisher) {
         this.webClient = webClient;
+        this.eventPublisher = eventPublisher;
         this.productServiceUrl = String.format("%s:%d", productServiceHost, productServicePort);
         this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
     }
 
-    @Override
     public Mono<ProductDTO> getProductById(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.debug("Will call the getProduct API on URL: {}", url);
@@ -59,13 +63,12 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
     }
 
 
-    @Override
+
     public Flux<ReviewDTO> getReview(String productId) {
         String url = String.format("%s/review/%s", productReviewServiceHost, productId);
         return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
     }
 
-    @Override
     public Mono<ProductDTO> createProduct(ProductDTO body) {
         String url = String.format("%s/product", productServiceUrl);
         log.debug("Will post a new product to URL: {}", url);
@@ -79,7 +82,6 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                     return Mono.error(new TechnicalException(ex.getMessage()));
                 });
     }
-    @Override
     public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
         String url = String.format("%s/products?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
         log.debug("Will call the getAllProducts API on URL: {}", url);
@@ -91,18 +93,11 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                 });
     }
 
-    @Override
-    public Mono<Void> deleteProduct(String productId) {
-        String url = String.format("%s/product/%s", productServiceUrl, productId);
-        deleteRecommendations(productId);
-        log.debug("Will call the deleteProduct API on URL: {}", url);
-        var response =  webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
-                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
-                    log.error("Delete failed product with productId: {} not found", productId);
-                    return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
-                });
-        deleteRecommendations(productId);
-        return response;
+    public void deleteProduct(String productId) {
+        ProductDTO productDTO =   getProductById(productId).block();
+        assert productDTO != null;
+        Event<String, ProductDTO> event = new Event<>(productDTO, productDTO.getProductId(), Event.Type.DELETE);
+        eventPublisher.publishEvent(event);
     }
 
     public CustomPage<RecommendationDTO> getRecommendationByProductId(String productId) {
@@ -118,7 +113,6 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                 }).block();
     }
 
-    @Override
     public RecommendationDTO createRecommendation(RecommendationDTO dto) {
         String url = String.format("%s/recommendation", productRecommendationServiceHost);
         log.debug("Will post a new recommendation to URL: {}", url);
@@ -135,6 +129,9 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
 
     public ProductAggregateDTO getProductAggregate(String productId) {
         ProductDTO product = getProductById(productId).block();
+        if(product == null) {
+            throw new EntityNotFoundException("Product with productId: " + productId + " not found");
+        }
         CustomPage<RecommendationDTO> recommendations = getRecommendationByProductId(productId);
         List<ReviewDTO> reviewDTOS =  getReview(productId).collectList().block();
         return  ProductAggregateDTO.builder()
@@ -146,7 +143,6 @@ public class ProductCompositeIntegration implements ProductResource, Recommendat
                 .description(product.getDescription())
                 .build();
     }
-    @Override
     public void deleteRecommendations(String id) {
         String url = String.format("%s/recommendation/%s", productRecommendationServiceHost, id);
         log.debug("Will call the deleteRecommendations API on URL: {}", url);

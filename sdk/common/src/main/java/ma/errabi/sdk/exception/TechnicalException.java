@@ -1,4 +1,4 @@
-package ma.errabi.sdk.util.exception;
+package ma.errabi.sdk.exception;
 
 public class TechnicalException extends RuntimeException {
     public TechnicalException(String message) {

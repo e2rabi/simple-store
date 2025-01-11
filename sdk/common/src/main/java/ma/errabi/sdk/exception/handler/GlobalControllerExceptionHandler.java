@@ -1,10 +1,10 @@
-package ma.errabi.sdk.util.exception.handler;
+package ma.errabi.sdk.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import ma.errabi.sdk.util.exception.EntityNotFoundException;
-import ma.errabi.sdk.util.exception.HttpErrorInfo;
-import ma.errabi.sdk.util.exception.InvalidInputException;
+import ma.errabi.sdk.exception.EntityNotFoundException;
+import ma.errabi.sdk.exception.HttpErrorInfo;
+import ma.errabi.sdk.exception.InvalidInputException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

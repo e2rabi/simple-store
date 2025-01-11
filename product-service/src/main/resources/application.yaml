@@ -7,6 +7,17 @@ spring:
       host: 127.0.0.1
       port: 27017
       database: product-db
+  cloud:
+    stream:
+      bindings:
+        myConsumer-in-0:
+          destination: product
+          group: my-consumer-group
+      kafka:
+        binder:
+          brokers: localhost:9092
+          consumer-properties:
+            enable.auto.commit: false
 
 logging:
   level:

@@ -1,10 +1,17 @@
 
 server:
-  port: 8080
+  port: 8082
 spring:
   application:
     name: product-composite-service
-
+  cloud:
+    stream:
+      bindings:
+        output-out-0:
+          destination: product
+      kafka:
+        binder:
+          brokers: localhost:9092
 springdoc:
   swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs

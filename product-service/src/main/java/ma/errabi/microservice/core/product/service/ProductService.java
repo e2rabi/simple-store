@@ -6,9 +6,8 @@ import ma.errabi.microservice.core.product.repository.ProductRepository;
 import ma.errabi.microservice.core.product.mapper.ProductMapper;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
-import ma.errabi.sdk.util.ServiceUtil;
-import ma.errabi.sdk.util.exception.EntityNotFoundException;
-import ma.errabi.sdk.util.exception.TechnicalException;
+import ma.errabi.sdk.exception.EntityNotFoundException;
+import ma.errabi.sdk.exception.TechnicalException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final ServiceUtil serviceUtil;
     private final ProductMapper productMapper;
 
     @Transactional

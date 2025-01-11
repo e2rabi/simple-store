@@ -26,7 +26,8 @@ public class ProductCompositeResource implements ProductCompositeResources {
 
     @DeleteMapping(value = "/product-composite/product/{productId}")
     public Mono<Void> deleteProduct(@PathVariable String productId) {
-        return integration.deleteProduct(productId);
+         integration.deleteProduct(productId);
+            return Mono.empty();
     }
 
     @Override

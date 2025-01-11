@@ -1,4 +1,4 @@
-package ma.errabi.sdk.util.exception;
+package ma.errabi.sdk.exception;
 
 import java.time.ZonedDateTime;
 

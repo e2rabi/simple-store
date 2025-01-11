@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "products")
-public class ProductEntity {
+public class Product {
     @Id
     @Indexed(unique = true)
     private String productId;
