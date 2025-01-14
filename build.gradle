@@ -1,29 +1,39 @@
 plugins {
-    id 'java'
-    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id 'java-library'
+    id 'maven-publish'
 }
 
-jib {
-    from {
-        image = 'amazoncorretto:17' // Base image, change as needed
-    }
-    to {
-        image = 'errabi-354522822172.d.codeartifact.eu-west-3.amazonaws.com/maven/product-microservices/' + project.name // Image repository
-    }
-    container {
-        ports = ['8080'] // Application ports
-        environment = [
-                'ENV_VAR_NAME': 'value' // Environment variables
-        ]
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
-repositories {
-    maven {
-        url 'https://errabi-354522822172.d.codeartifact.eu-west-3.amazonaws.com/maven/product-microservices/'
-        credentials {
-            username = "aws"
-            password = System.env.CODEARTIFACT_AUTH_TOKEN
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'errabi-microservice'
+                artifactId = project.name
+                version = project.version
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                url 'https://errabi-354522822172.d.codeartifact.eu-west-3.amazonaws.com/maven/product-microservices/'
+                credentials {
+                    username = "aws"
+                    password = System.env.CODEARTIFACT_AUTH_TOKEN
+                }
+            }
         }
     }
 }
