@@ -1,6 +1,6 @@
 rootProject.name = 'product-microservices'
-include "sdk:api"
-include "sdk:common"
+include "sdk:sdk-api"
+include "sdk:sdk-common"
 include "product-service"
 include "review-service"
 include "recommendation-service"

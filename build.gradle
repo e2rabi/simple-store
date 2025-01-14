@@ -1,22 +1,14 @@
 plugins {
-    id 'java-library'
     id 'maven-publish'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    id 'java'
 }
 
 subprojects {
-    apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    if (project.name == 'sdk') {
+        return
     }
-
+    apply plugin: 'maven-publish'
+    apply plugin: 'java'
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -28,10 +20,10 @@ subprojects {
         }
         repositories {
             maven {
-                url 'https://errabi-354522822172.d.codeartifact.eu-west-3.amazonaws.com/maven/product-microservices/'
+                url 'https://errabi-354522822172.d.codeartifact.eu-west-3.amazonaws.com/maven/errabi-microservice/'
                 credentials {
-                    username = "aws"
-                    password = System.env.CODEARTIFACT_AUTH_TOKEN
+                    username "aws"
+                    password System.env.CODEARTIFACT_AUTH_TOKEN
                 }
             }
         }

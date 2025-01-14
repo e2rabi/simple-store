@@ -12,3 +12,7 @@
    create review
    delete review
    get reviews by product id
+
+
+
+   export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain errabi --domain-owner 354522822172 --region eu-west-3 --query authorizationToken --output text`

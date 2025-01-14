@@ -3,16 +3,16 @@ plugins {
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
 }
-
-group = 'ma.errabi.microservice.core.product-composite'
-version = '0.0.1-SNAPSHOT'
-
-
-repositories {
-	mavenCentral()
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
+
 ext{
 	lombokVersion = '1.18.22'
+}
+repositories{
+	mavenCentral()
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -25,19 +25,11 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	implementation project(':sdk:api')
-	implementation project(':sdk:common')
+	implementation project(':sdk:sdk-api')
+	implementation project(':sdk:sdk-common')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.named('bootJar') {

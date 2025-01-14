@@ -32,8 +32,8 @@ dependencies {
 	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation project(':sdk:api')
-	implementation project(':sdk:common')
+	implementation project(':sdk:sdk-api')
+	implementation project(':sdk:sdk-common')
 }
 
 tasks.named('test') {

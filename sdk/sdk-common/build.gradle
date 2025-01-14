@@ -27,5 +27,5 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation project(':sdk:api')
+    implementation project(':sdk:sdk-api')
 }
