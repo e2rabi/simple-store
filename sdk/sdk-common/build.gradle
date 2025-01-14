@@ -1,6 +1,7 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.springframework.boot' version '3.3.5'
 }
 group = 'ma.errabi.microservice.sdk.api'
 version = '0.0.1-SNAPSHOT'
@@ -28,4 +29,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation project(':sdk:sdk-api')
+}
+tasks.named('bootJar') {
+    enabled = false
+}
+tasks.named('jar') {
+    enabled = true
 }
