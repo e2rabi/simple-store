@@ -1,0 +1,11 @@
+
+
+repositories {
+    maven {
+        url 'https://errabi-354522822172.d.codeartifact.eu-west-3.amazonaws.com/maven/product-microservices/'
+        credentials {
+            username "aws"
+            password System.env.CODEARTIFACT_AUTH_TOKEN
+        }
+    }
+}

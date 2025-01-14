@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ma.errabi.microservice.core.review.mapper.ReviewMapper;
 import ma.errabi.microservice.core.review.repository.ReviewRepository;
 import ma.errabi.sdk.api.review.ReviewDTO;
-import ma.errabi.sdk.util.exception.EntityNotFoundException;
+import ma.errabi.sdk.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
