@@ -1,4 +1,4 @@
-rootProject.name = 'product-microservices'
+rootProject.name = 'simple-store'
 include "sdk:sdk-api"
 include "sdk:sdk-common"
 include "product-service"
