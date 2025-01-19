@@ -1,21 +1,24 @@
 package ma.errabi.microservice.core.review.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.data.annotation.Id;
 
 @Data
-@Table("reviews")
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Review {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String productId;
     private String author;
     private String subject;
     private String content;
+
+
 
 }

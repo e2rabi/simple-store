@@ -1,17 +1,19 @@
 server:
   port: 8001
+
 spring:
   application:
-        name: review-service
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/postgres
-    username: admin
-    password: admin
-  sql:
-    init:
-      mode: always
-
-
+    name: review-service
+  datasource:
+    url: jdbc:postgresql://ep-curly-thunder-a5bovt5y.us-east-2.aws.neon.tech:5432/review
+    username: review
+    password: RVlCws5U0QTu
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
 
 ---
 spring:
