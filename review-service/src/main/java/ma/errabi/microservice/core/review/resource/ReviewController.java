@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequestMapping("/v1/review")
 @RequiredArgsConstructor
 public class ReviewController {//implements ReviewResource {
     private final ReviewService reviewService;
@@ -21,11 +22,11 @@ public class ReviewController {//implements ReviewResource {
     }
 
     @DeleteMapping
-    public void deleteReviews(int productId) {
+    public void deleteReviews(String productId) {
          reviewService.deleteReviews(productId);
     }
 
-    @GetMapping("/review/{productId}/product")
+    @GetMapping("{productId}/product")
     public Page<ReviewDTO> getAllReviews(@PathVariable int productId,
                                                @RequestParam int page,
                                                @RequestParam int pageSize,
@@ -36,8 +37,8 @@ public class ReviewController {//implements ReviewResource {
         return reviewService.getAllReviews(productId, pageable);
     }
 
-    @GetMapping("/review/{productId}")
-    public ReviewDTO getReview(@PathVariable String productId) {
+    @GetMapping("{productId}")
+    public ReviewDTO getReview(@PathVariable Integer productId) {
         return reviewService.getReview(productId);
     }
 }
