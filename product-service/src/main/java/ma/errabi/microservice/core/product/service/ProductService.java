@@ -7,11 +7,9 @@ import ma.errabi.microservice.core.product.mapper.ProductMapper;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.exception.EntityNotFoundException;
-import ma.errabi.sdk.exception.TechnicalException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -22,33 +20,27 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
-    @Transactional
     public Mono<ProductDTO> createProduct(ProductDTO productDTO) {
-        try {
-            ProductDTO createdProduct =   productMapper.toDTO(productRepository.save(productMapper.toEntity(productDTO)).block());
-            return Mono.just(createdProduct);
-        }catch (Exception ex){
-            log.error("createProduct: Error creating the product: {}", ex.getMessage());
-            throw new TechnicalException(ex.getMessage());
-        }
+        log.debug("Creating a new product with information: {}", productDTO);
+        ProductDTO createdProduct =   productMapper.toDTO(productRepository.save(productMapper.toEntity(productDTO)).block());
+        return Mono.just(createdProduct);
     }
-    @Transactional(readOnly = true)
     public Mono<ProductDTO> getProductById(String productId) {
+        log.debug("Getting product with ID: {}", productId);
         return productRepository.findById(productId)
                 .map(productMapper::toDTO)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("No product found for productId: " + productId)));
     }
-    @Transactional
     public Mono<Void> deleteProduct(String productId) {
+        log.debug("Deleting product with ID: {}", productId);
         return productRepository.findById(productId)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("No product found for productId: " + productId)))
                 .publishOn(Schedulers.boundedElastic())
                 .doOnNext(product -> productRepository.delete(product).subscribe())
                 .then();
     }
-
-    @Transactional(readOnly = true)
     public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
+        log.debug("Getting all products");
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         return productRepository.findAllBy(pageRequest)
                 .collectList()

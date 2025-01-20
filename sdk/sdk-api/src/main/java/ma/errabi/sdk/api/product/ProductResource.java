@@ -12,7 +12,7 @@ public interface ProductResource {
     Mono<Void> deleteProduct(@PathVariable String productId);
     @PostMapping(value = "/product",consumes = "application/json")
     Mono<ProductDTO> createProduct(@RequestBody ProductDTO body);
-    @GetMapping(value = "/products")
+    @GetMapping(value = "/product")
     Mono<CustomPage<ProductDTO>> getAllProducts(@RequestParam(defaultValue = "0") int pageNumber,
                                                 @RequestParam(defaultValue = "10") int pageSize);
 }

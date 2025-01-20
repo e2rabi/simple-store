@@ -14,5 +14,4 @@ public class ProductDTO {
     private String name;
     private String description;
     private double weight;
-    private String serviceAddress;
 }

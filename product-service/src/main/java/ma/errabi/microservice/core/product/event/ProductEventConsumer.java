@@ -7,8 +7,6 @@ import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.event.Event;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-
-
 import java.util.function.Consumer;
 
 @Slf4j
