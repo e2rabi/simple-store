@@ -1,9 +1,12 @@
 
 server:
-  port: 8082
+  port: 8080
 spring:
   application:
     name: product-composite-service
+  config:
+    activate:
+      on-profile: docker
   cloud:
     stream:
       bindings:
@@ -20,14 +23,14 @@ springdoc:
 
 app:
   product-service:
-    host: http://localhost
+    host: http://product
     port: 8080
   review-service:
-    host: http://localhost
-    port: 8001
+    host: http://review
+    port: 8080
   recommendation-service:
-    host: http://localhost
-    port: 8002
+    host: http://recommendation
+    port: 8080
 
 api:
   common:
@@ -43,4 +46,3 @@ api:
       name: NAME OF CONTACT
       url: URL TO CONTACT
       email: contact@mail.com
-

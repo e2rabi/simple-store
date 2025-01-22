@@ -17,6 +17,7 @@ import reactor.netty.http.client.HttpClient;
 
 @Configuration
 public class CompositeConfig {
+
     @Value("${api.common.version}")         String apiVersion;
     @Value("${api.common.title}")           String apiTitle;
     @Value("${api.common.description}")     String apiDescription;

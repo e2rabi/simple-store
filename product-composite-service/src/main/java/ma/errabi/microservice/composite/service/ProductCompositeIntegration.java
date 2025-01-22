@@ -5,11 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.composite.ProductAggregateDTO;
 import ma.errabi.sdk.api.product.ProductDTO;
-import ma.errabi.sdk.api.product.ProductResource;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
-import ma.errabi.sdk.api.recommendation.RecommendationResource;
 import ma.errabi.sdk.api.review.ReviewDTO;
-import ma.errabi.sdk.api.review.ReviewResource;
 import ma.errabi.sdk.event.Event;
 import ma.errabi.sdk.event.EventPublisher;
 import ma.errabi.sdk.exception.EntityNotFoundException;
@@ -49,29 +46,9 @@ public class ProductCompositeIntegration  {
         this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
     }
-
-    public Mono<ProductDTO> getProductById(String productId) {
-        String url = String.format("%s/product/%s", productServiceUrl, productId);
-        log.debug("Will call the getProduct API on URL: {}", url);
-        return webClient.get().uri(url)
-                .retrieve()
-                .bodyToMono(ProductDTO.class)
-                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
-                    log.error("Product with productId: {} not found", productId);
-                    return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
-                });
-    }
-
-
-
-    public Flux<ReviewDTO> getReview(String productId) {
-        String url = String.format("%s/review/%s", productReviewServiceHost, productId);
-        return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
-    }
-
     public Mono<ProductDTO> createProduct(ProductDTO body) {
         String url = String.format("%s/product", productServiceUrl);
-        log.debug("Will post a new product to URL: {}", url);
+        log.debug("Calling create product API : {}", url);
         return webClient.post().uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
@@ -82,8 +59,34 @@ public class ProductCompositeIntegration  {
                     return Mono.error(new TechnicalException(ex.getMessage()));
                 });
     }
+    public Mono<ProductDTO> getProductById(String productId) {
+        String url = String.format("%s/product/%s", productServiceUrl, productId);
+        log.debug("Call get product by product id API on URL: {}", url);
+        return webClient.get().uri(url)
+                .retrieve()
+                .bodyToMono(ProductDTO.class)
+                .onErrorResume(Exception.class, ex -> {
+                    log.error("Product with productId: {} not found", productId);
+                    return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
+                });
+    }
+    public void deleteProduct(String productId) {
+        log.debug("Publish event delete product by product id {}", productId);
+        ProductDTO productDTO =   getProductById(productId).block();
+        assert productDTO != null;
+        Event<String, ProductDTO> event = new Event<>(productDTO, productDTO.getProductId(), Event.Type.DELETE);
+        eventPublisher.publishEvent(event);
+        // publish delete review
+        // publish delete recommendation
+    }
+
+
+    public Flux<ReviewDTO> getReview(String productId) {
+        String url = String.format("%s/review/%s", productReviewServiceHost, productId);
+        return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
+    }
     public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
-        String url = String.format("%s/products?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
+        String url = String.format("%s/product?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
         log.debug("Will call the getAllProducts API on URL: {}", url);
         return webClient.get()
                 .uri(url)
@@ -92,14 +95,6 @@ public class ProductCompositeIntegration  {
                 .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
-
-    public void deleteProduct(String productId) {
-        ProductDTO productDTO =   getProductById(productId).block();
-        assert productDTO != null;
-        Event<String, ProductDTO> event = new Event<>(productDTO, productDTO.getProductId(), Event.Type.DELETE);
-        eventPublisher.publishEvent(event);
-    }
-
     public CustomPage<RecommendationDTO> getRecommendationByProductId(String productId) {
         String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost, productId);
         log.debug("Will call the getRecommendationByProductId API on URL: {}", url);
