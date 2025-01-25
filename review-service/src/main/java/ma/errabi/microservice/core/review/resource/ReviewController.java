@@ -11,34 +11,29 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/v1/review")
+@RequestMapping("/review")
 @RequiredArgsConstructor
 public class ReviewController {//implements ReviewResource {
     private final ReviewService reviewService;
 
     @PostMapping
     public ReviewDTO createReview(@RequestBody ReviewDTO reviewDTO) {
-            return reviewService.saveReview(reviewDTO);
+        return reviewService.saveReview(reviewDTO);
     }
 
-    @DeleteMapping
-    public void deleteReviews(String productId) {
+    @DeleteMapping("/{productId}")
+    public void deleteReviews(@PathVariable String productId) {
          reviewService.deleteReviews(productId);
     }
 
-    @GetMapping("{productId}/product")
-    public Page<ReviewDTO> getAllReviews(@PathVariable int productId,
-                                               @RequestParam int page,
-                                               @RequestParam int pageSize,
-                                               @RequestParam(required = false) String sortBy,
-                                               @RequestParam(required = false) String sortDir) {
+    @GetMapping("/{productId}/product")
+    public Page<ReviewDTO> getProductReviews(@PathVariable String productId,
+                                             @RequestParam(defaultValue = "0")int page,
+                                             @RequestParam(defaultValue = "10") int pageSize,
+                                             @RequestParam(required = false) String sortBy,
+                                             @RequestParam(required = false) String sortDir) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir != null ? sortDir : "ASC"), sortBy != null ? sortBy : "id");
         Pageable pageable = PageRequest.of(page, pageSize, sort);
-        return reviewService.getAllReviews(productId, pageable);
-    }
-
-    @GetMapping("{productId}")
-    public ReviewDTO getReview(@PathVariable Integer productId) {
-        return reviewService.getReview(productId);
+        return reviewService.getProductReviews(productId, pageable);
     }
 }

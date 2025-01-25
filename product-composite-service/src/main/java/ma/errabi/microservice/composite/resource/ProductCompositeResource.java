@@ -8,12 +8,14 @@ import ma.errabi.sdk.api.composite.ProductAggregateDTO;
 import ma.errabi.sdk.api.composite.ProductCompositeResources;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
+import ma.errabi.sdk.api.review.ReviewDTO;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 
 @Slf4j
 @RestController
+@RequestMapping("/v1")
 @RequiredArgsConstructor
 public class ProductCompositeResource implements ProductCompositeResources {
 
@@ -50,5 +52,17 @@ public class ProductCompositeResource implements ProductCompositeResources {
     @GetMapping(value = "/product-composite/product-details/{productId}")
     public ProductAggregateDTO getProductAggregate(@PathVariable String productId) {
         return integration.getProductAggregate(productId);
+    }
+    @PostMapping(value = "/product-composite/review",consumes = "application/json")
+    public ReviewDTO createReview(@RequestBody ReviewDTO body) {
+        return integration.createReview(body);
+    }
+    @GetMapping(value = "/product-composite/product/{productId}/review")
+    public CustomPage<ReviewDTO> getproductReviews(@PathVariable String productId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize) {
+        return integration.getProductReviews(productId,page,pageSize);
+    }
+    @DeleteMapping(value = "/product-composite/product/{productId}/review")
+    public void deleteReviews(@PathVariable String productId) {
+        integration.deleteReviews(productId);
     }
 }

@@ -14,8 +14,13 @@ import ma.errabi.sdk.exception.TechnicalException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
@@ -32,6 +37,7 @@ public class ProductCompositeIntegration  {
     private final String productReviewServiceHost;
     private final String productRecommendationServiceHost;
     private final EventPublisher eventPublisher;
+    private final RestTemplate restTemplate ;
 
     public ProductCompositeIntegration(WebClient webClient, ObjectMapper objectMapper,
                                        @Value("${app.product-service.host}") String productServiceHost,
@@ -39,9 +45,10 @@ public class ProductCompositeIntegration  {
                                        @Value("${app.review-service.host}") String productReviewServiceHost,
                                        @Value("${app.review-service.port}") int productReviewServicePort,
                                        @Value("${app.recommendation-service.host}") String productRecommendationServiceHost,
-                                       @Value("${app.recommendation-service.port}") int productRecommendationServicePort, StreamBridge streamBridge, EventPublisher eventPublisher) {
+                                       @Value("${app.recommendation-service.port}") int productRecommendationServicePort, StreamBridge streamBridge, EventPublisher eventPublisher, RestTemplate restTemplate) {
         this.webClient = webClient;
         this.eventPublisher = eventPublisher;
+        this.restTemplate = restTemplate;
         this.productServiceUrl = String.format("%s:%d", productServiceHost, productServicePort);
         this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
         this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
@@ -148,4 +155,30 @@ public class ProductCompositeIntegration  {
                 }).block();
     }
 
+    public ReviewDTO createReview(ReviewDTO body) {
+        String url = String.format("%s/review", productReviewServiceHost);
+        log.debug("Will post a new review to URL: {}", url);
+        return restTemplate.postForObject(url, body, ReviewDTO.class);
+    }
+    public CustomPage<ReviewDTO> getProductReviews(String productId, int page, int pageSize) {
+        String url = String.format("%s/review/%s/product", productReviewServiceHost, productId);
+        log.debug("Call get review by product id API on URL: {}", url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("page", String.valueOf(page));
+        headers.set("pageSize", String.valueOf(pageSize));
+
+        return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers),
+                new ParameterizedTypeReference<CustomPage<ReviewDTO>>() {}).getBody();
+    }
+    public void deleteReviews(String productId) {
+        String url = String.format("%s/review/%s", productReviewServiceHost, productId);
+        log.debug("Call the deleteReviews API on URL: {}", url);
+        try {
+            restTemplate.delete(url);
+        } catch (HttpClientErrorException.NotFound ex) {
+            log.error("Failed to delete reviews for productId: {}", productId, ex);
+            throw new EntityNotFoundException("Failed to delete reviews for productId: " + productId);
+        }
+    }
 }
