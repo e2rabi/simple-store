@@ -115,12 +115,12 @@ public class ProductCompositeIntegration  {
                 }).block();
     }
 
-    public RecommendationDTO createRecommendation(RecommendationDTO dto) {
+    public RecommendationDTO createRecommendation(RecommendationDTO body) {
         String url = String.format("%s/recommendation", productRecommendationServiceHost);
-        log.debug("Will post a new recommendation to URL: {}", url);
+        log.debug("Call create a recommendation API to URL: {}", url);
         return webClient.post().uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(dto)
+                .bodyValue(body)
                 .retrieve()
                 .bodyToMono(RecommendationDTO.class)
                 .onErrorResume(WebClientResponseException.class, ex -> {
@@ -145,8 +145,8 @@ public class ProductCompositeIntegration  {
                 .description(product.getDescription())
                 .build();
     }
-    public void deleteRecommendations(String id) {
-        String url = String.format("%s/recommendation/%s", productRecommendationServiceHost, id);
+    public void deleteRecommendations(String productId, String id) {
+        String url = String.format("%s/recommendation/%s/product/%s", productRecommendationServiceHost, id,productId);
         log.debug("Will call the deleteRecommendations API on URL: {}", url);
         webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, ex -> {

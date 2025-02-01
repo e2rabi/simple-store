@@ -1,13 +1,18 @@
 
 server:
-    port: 8002
+    port: 8080
+
 aws:
   dynamodb:
      region: us-east-1
      endpoint: http://localhost:8000/
+
 spring:
   application:
     name: recommendation-service
+  config:
+    activate:
+      on-profile: docker
 logging:
   level:
     com:

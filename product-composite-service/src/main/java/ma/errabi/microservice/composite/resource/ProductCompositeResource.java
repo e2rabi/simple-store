@@ -40,15 +40,6 @@ public class ProductCompositeResource implements ProductCompositeResources {
     public Mono<CustomPage<ProductDTO>> getProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize) {
         return integration.getAllProducts(page, pageSize);
     }
-
-    @GetMapping(value = "/product-composite/recommendation/product/{productId}")
-    public CustomPage<RecommendationDTO> getRecommendationByProductId(@PathVariable String productId) {
-        return integration.getRecommendationByProductId(productId);
-    }
-    @PostMapping(value = "/product-composite/recommendation",consumes = "application/json")
-    public RecommendationDTO createRecommendation(@RequestBody RecommendationDTO body) {
-        return integration.createRecommendation(body);
-    }
     @GetMapping(value = "/product-composite/product-details/{productId}")
     public ProductAggregateDTO getProductAggregate(@PathVariable String productId) {
         return integration.getProductAggregate(productId);
@@ -64,5 +55,17 @@ public class ProductCompositeResource implements ProductCompositeResources {
     @DeleteMapping(value = "/product-composite/product/{productId}/review")
     public void deleteReviews(@PathVariable String productId) {
         integration.deleteReviews(productId);
+    }
+    @PostMapping(value = "/product-composite/recommendation",consumes = "application/json")
+    public RecommendationDTO createProductRecommendation(@RequestBody RecommendationDTO body) {
+        return integration.createRecommendation(body);
+    }
+    @DeleteMapping(value = "/product-composite/product/{productId}/recommendation/{id}")
+    public void deleteRecommendation(@PathVariable String productId,@PathVariable String id) {
+        integration.deleteRecommendations(productId,id);
+    }
+    @GetMapping(value = "/product-composite/product/{productId}/recommendation")
+    public CustomPage<RecommendationDTO> getRecommendationByProductId(@PathVariable String productId) {
+        return integration.getRecommendationByProductId(productId);
     }
 }

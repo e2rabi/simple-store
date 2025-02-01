@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ma.errabi.sdk.exception.EntityNotFoundException;
 import ma.errabi.sdk.exception.HttpErrorInfo;
 import ma.errabi.sdk.exception.InvalidInputException;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,4 +34,6 @@ public class GlobalControllerExceptionHandler {
         log.error("Invalid request: {} {}", request.getMethod(), request.getRequestURI());
         return new HttpErrorInfo(HttpStatus.NOT_FOUND,request.getRequestURI(),ex.getMessage());
     }
+
+
 }

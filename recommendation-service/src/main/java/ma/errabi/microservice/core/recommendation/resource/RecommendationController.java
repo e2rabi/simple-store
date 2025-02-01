@@ -6,6 +6,7 @@ import ma.errabi.microservice.core.recommendation.service.RecommendationService;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.recommendation.RecommendationDTO;
 import ma.errabi.sdk.api.recommendation.RecommendationResource;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,9 +23,10 @@ public class RecommendationController implements RecommendationResource {
        return recommendationService.createRecommendation(dto);
     }
     @Override
-    public void deleteRecommendations(String id) {
+    @DeleteMapping(value = "/recommendation/{id}/product/{productId}")
+    public void deleteRecommendations(@PathVariable String id,@PathVariable String productId) {
         log.debug("deleteRecommendations: tries to delete recommendations for the product with productId: {}", id);
-        recommendationService.deleteRecommendations(id);
+        recommendationService.deleteRecommendations(id,productId);
     }
     @GetMapping(value = "/recommendation/product/{productId}",produces = "application/json")
     public CustomPage<RecommendationDTO> getRecommendationByProductId(@PathVariable String productId) {
