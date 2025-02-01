@@ -14,7 +14,7 @@ spring:
           destination: product
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: kafka:9092
 springdoc:
   swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
