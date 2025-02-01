@@ -40,7 +40,6 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     depends_on:
       - zookeeper
-
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.1
     restart: always
@@ -51,7 +50,8 @@ services:
       - ZOOKEEPER_CLIENT_PORT=2181
   akhq:
     image: tchiotludo/akhq
-    restart: unless-stopped
+    restart: always
+    mem_limit: 512m
     environment:
       AKHQ_CONFIGURATION: |
         akhq:
@@ -62,7 +62,5 @@ services:
               connect:
                 - name: "connect"
                   url: "http://connect:8083"
-    ports:
-      - 8070:8080
     links:
       - kafka
