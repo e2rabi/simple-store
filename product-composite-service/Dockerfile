@@ -6,7 +6,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the built jar file from the host to the container
-COPY build/libs/product-composite-service-1.0.7-SNAPSHOT.jar app.jar
+COPY build/libs/product-composite-service-1.0.8-SNAPSHOT.jar app.jar
 
 # Expose the port the application will run on
 EXPOSE 8080

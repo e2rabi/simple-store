@@ -157,7 +157,7 @@ public class ProductCompositeIntegration  {
 
     public ReviewDTO createReview(ReviewDTO body) {
         String url = String.format("%s/review", productReviewServiceHost);
-        log.debug("Will post a new review to URL: {}", url);
+        log.info("Will post a new review to URL: {}", url);
         return restTemplate.postForObject(url, body, ReviewDTO.class);
     }
     public CustomPage<ReviewDTO> getProductReviews(String productId, int page, int pageSize) {

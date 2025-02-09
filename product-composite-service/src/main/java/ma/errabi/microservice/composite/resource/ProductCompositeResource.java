@@ -46,6 +46,7 @@ public class ProductCompositeResource implements ProductCompositeResources {
     }
     @PostMapping(value = "/product-composite/review",consumes = "application/json")
     public ReviewDTO createReview(@RequestBody ReviewDTO body) {
+        log.info("Creating review: {}",body);
         return integration.createReview(body);
     }
     @GetMapping(value = "/product-composite/product/{productId}/review")
