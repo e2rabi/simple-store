@@ -2,38 +2,24 @@ package ma.errabi.microservice.core.recommendation.domain;
 
 
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 
+@Entity
 @Getter
 @Setter
-@ToString
-@DynamoDbBean
 public class Recommendation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String productId;
-
     private String author;
     private String content;
     private Integer rating;
-
-    @DynamoDbPartitionKey
-    public String getId() {
-        return id;
-    }
-    @DynamoDbSortKey
-    public String getProductId() {
-        return productId;
-    }
-    @DynamoDbSecondaryPartitionKey(indexNames = "recommendation_by_author")
-    public String getAuthor() {
-        return author;
-    }
 }

@@ -20,8 +20,10 @@ ext{
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.data:spring-data-commons:3.2.3' // Use the latest version
-    implementation 'org.springdoc:springdoc-openapi-starter-common:2.1.0' // contains only annotations
+    implementation 'org.springframework.data:spring-data-commons:3.2.3'
+    implementation 'org.springframework.data:spring-data-jpa'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.1.0'
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springbootVersion}")
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compileOnly 'org.projectlombok:lombok'

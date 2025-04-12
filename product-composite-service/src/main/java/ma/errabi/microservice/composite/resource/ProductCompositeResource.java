@@ -61,9 +61,9 @@ public class ProductCompositeResource implements ProductCompositeResources {
     public RecommendationDTO createProductRecommendation(@RequestBody RecommendationDTO body) {
         return integration.createRecommendation(body);
     }
-    @DeleteMapping(value = "/product-composite/product/{productId}/recommendation/{id}")
-    public void deleteRecommendation(@PathVariable String productId,@PathVariable String id) {
-        integration.deleteRecommendations(productId,id);
+    @DeleteMapping(value = "/product-composite/product/{productId}/recommendation")
+    public void deleteRecommendation(@PathVariable String productId) {
+        integration.deleteRecommendations(productId);
     }
     @GetMapping(value = "/product-composite/product/{productId}/recommendation")
     public CustomPage<RecommendationDTO> getRecommendationByProductId(@PathVariable String productId) {

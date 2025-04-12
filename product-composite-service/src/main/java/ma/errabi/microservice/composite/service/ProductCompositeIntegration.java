@@ -145,13 +145,13 @@ public class ProductCompositeIntegration  {
                 .description(product.getDescription())
                 .build();
     }
-    public void deleteRecommendations(String productId, String id) {
-        String url = String.format("%s/recommendation/%s/product/%s", productRecommendationServiceHost, id,productId);
+    public void deleteRecommendations(String productId) {
+        String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost,productId);
         log.debug("Will call the deleteRecommendations API on URL: {}", url);
         webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
-                    log.error("Delete failed recommendation with id: {} not found", id);
-                    return Mono.error(new EntityNotFoundException("Recommendation with id: " + id + " not found"));
+                    log.error("Delete failed recommendation with product id: {} not found", productId);
+                    return Mono.error(new EntityNotFoundException("Recommendation with product id: " + productId + " not found"));
                 }).block();
     }
 
