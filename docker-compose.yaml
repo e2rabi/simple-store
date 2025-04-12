@@ -25,17 +25,7 @@ services:
     build: recommendation-service
     mem_limit: 512m
     environment:
-      - AWS_REGION=us-east-1
       - SPRING_PROFILES_ACTIVE=docker
-      - AWS_ACCESS_KEY_ID=
-      - AWS_SECRET_ACCESS_KEY=
-  dynamoDb:
-    mem_limit: 512m
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
-    image: "amazon/dynamodb-local:latest"
-    container_name: dynamodb-local
-    ports:
-      - "8000:8000"
   mongodb:
     image: mongo:6.0.4
     mem_limit: 512m
