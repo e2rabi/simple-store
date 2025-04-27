@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: product-service
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: product-db
+  cloud:
+    stream:
+      bindings:
+        deleteProductConsumer-in-0:
+          destination: product
+          group: product-consumer-group
+      kafka:
+        binder:
+          brokers: kafka
+          consumer-properties:
+            enable.auto.commit: false
+server:
+  port: 8080
