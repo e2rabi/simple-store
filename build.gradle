@@ -8,7 +8,9 @@ plugins {
 
 subprojects {
     println "Project name: ${project.name}"
-    if (project.name == 'sdk' || project.name == 'sdk-api' || project.name == 'sdk-common') {
+    if (project.name == 'sdk' || project.name == 'sdk-api' || project.name == 'sdk-common' || project.name == 'product-service' || project.name == 'review-service' || project.name == 'recommendation-service'
+            || project.name == 'product-composite-service' || project.name == 'modules'
+            || project.name == 'docker' || project.name == 'kubernetes' || project.name == 'infrastructure') {
         println "Skip project name: ${project.name}"
         return
     }

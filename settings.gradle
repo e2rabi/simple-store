@@ -1,9 +1,11 @@
 rootProject.name = 'simple-store'
 include "sdk:sdk-api"
 include "sdk:sdk-common"
-include "product-service"
-include "review-service"
-include "recommendation-service"
-include "product-composite-service"
+include "modules:product-service"
+include "modules:review-service"
+include "modules:recommendation-service"
+include "modules:product-composite-service"
 include "infrastructure:eureka-server"
+include "infrastructure:docker"
+include "infrastructure:kubernetes"
 
