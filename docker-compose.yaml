@@ -37,6 +37,15 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+  postgres:
+    image: postgres
+    mem_limit: 512m
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=review
+      - POSTGRES_PASSWORD=RVlCws5U0QTu
+      - POSTGRES_DB=review
   kafka:
     image: confluentinc/cp-kafka:7.3.1
     restart: always
