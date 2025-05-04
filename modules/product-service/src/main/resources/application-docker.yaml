@@ -22,3 +22,7 @@ spring:
             enable.auto.commit: false
 server:
   port: 8080
+eureka:
+  client:
+    service-url:
+        defaultZone: http://eureka:8761/eureka/

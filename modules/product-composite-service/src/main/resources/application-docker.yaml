@@ -46,3 +46,7 @@ api:
       name: NAME OF CONTACT
       url: URL TO CONTACT
       email: contact@mail.com
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka/

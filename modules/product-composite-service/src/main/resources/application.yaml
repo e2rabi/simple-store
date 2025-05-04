@@ -1,6 +1,6 @@
 
 server:
-  port: 8009
+  port: 8010
 spring:
   application:
     name: product-composite-service
@@ -20,8 +20,8 @@ springdoc:
 
 app:
   product-service:
-    host: http://localhost
-    port: 8080
+    host: http://product-service
+    port: 8010
   review-service:
     host: http://localhost
     port: 8001
@@ -44,3 +44,14 @@ api:
       url: URL TO CONTACT
       email: contact@mail.com
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    initial-instance-info-replication-interval-seconds: 0
+    registry-fetch-interval-seconds: 5
+    fetch-registry: true
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 5
+    prefer-ip-address: true

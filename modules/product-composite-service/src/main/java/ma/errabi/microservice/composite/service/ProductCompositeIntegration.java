@@ -32,14 +32,14 @@ import java.util.List;
 @Slf4j
 @Component
 public class ProductCompositeIntegration  {
-    private final WebClient webClient;
+    private final WebClient.Builder webClient;
     private final String productServiceUrl;
     private final String productReviewServiceHost;
     private final String productRecommendationServiceHost;
     private final EventPublisher eventPublisher;
     private final RestTemplate restTemplate ;
 
-    public ProductCompositeIntegration(WebClient webClient, ObjectMapper objectMapper,
+    public ProductCompositeIntegration(WebClient.Builder webClient, ObjectMapper objectMapper,
                                        @Value("${app.product-service.host}") String productServiceHost,
                                        @Value("${app.product-service.port}") int productServicePort,
                                        @Value("${app.review-service.host}") String productReviewServiceHost,
@@ -56,7 +56,7 @@ public class ProductCompositeIntegration  {
     public Mono<ProductDTO> createProduct(ProductDTO body) {
         String url = String.format("%s/product", productServiceUrl);
         log.debug("Calling create product API : {}", url);
-        return webClient.post().uri(url)
+        return webClient.build().post().uri("http://PRODUCT-SERVICE/product")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .retrieve()
@@ -69,7 +69,7 @@ public class ProductCompositeIntegration  {
     public Mono<ProductDTO> getProductById(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.debug("Call get product by product id API on URL: {}", url);
-        return webClient.get().uri(url)
+        return webClient.build().get().uri(url)
                 .retrieve()
                 .bodyToMono(ProductDTO.class)
                 .onErrorResume(Exception.class, ex -> {
@@ -90,12 +90,12 @@ public class ProductCompositeIntegration  {
 
     public Flux<ReviewDTO> getReview(String productId) {
         String url = String.format("%s/review/%s", productReviewServiceHost, productId);
-        return webClient.get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
+        return webClient.build().get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
     }
     public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
         String url = String.format("%s/product?page=%d&pageSize=%d", productServiceUrl, pageNumber, pageSize);
         log.debug("Will call the getAllProducts API on URL: {}", url);
-        return webClient.get()
+        return webClient.build().get()
                 .uri(url)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -105,7 +105,7 @@ public class ProductCompositeIntegration  {
     public CustomPage<RecommendationDTO> getRecommendationByProductId(String productId) {
         String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost, productId);
         log.debug("Will call the getRecommendationByProductId API on URL: {}", url);
-        return webClient.get().uri(url)
+        return webClient.build().get().uri(url)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<CustomPage<RecommendationDTO>>() {
                 })
@@ -118,7 +118,7 @@ public class ProductCompositeIntegration  {
     public RecommendationDTO createRecommendation(RecommendationDTO body) {
         String url = String.format("%s/recommendation", productRecommendationServiceHost);
         log.debug("Call create a recommendation API to URL: {}", url);
-        return webClient.post().uri(url)
+        return webClient.build().post().uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .retrieve()
@@ -148,7 +148,7 @@ public class ProductCompositeIntegration  {
     public void deleteRecommendations(String productId) {
         String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost,productId);
         log.debug("Will call the deleteRecommendations API on URL: {}", url);
-        webClient.delete().uri(url).retrieve().bodyToMono(Void.class)
+        webClient.build().delete().uri(url).retrieve().bodyToMono(Void.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
                     log.error("Delete failed recommendation with product id: {} not found", productId);
                     return Mono.error(new EntityNotFoundException("Recommendation with product id: " + productId + " not found"));
