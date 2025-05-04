@@ -23,14 +23,11 @@ springdoc:
 
 app:
   product-service:
-    host: http://product
-    port: 8080
+    host: http://PRODUCT-SERVICE
   review-service:
-    host: http://review
-    port: 8080
+    host: http://REVIEW-SERVICE
   recommendation-service:
-    host: http://recommendation
-    port: 8080
+    host: http://RECOMMENDATION-SERVICE
 
 api:
   common:

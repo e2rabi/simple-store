@@ -1,6 +1,6 @@
 package ma.errabi.microservice.composite.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.composite.ProductAggregateDTO;
@@ -12,13 +12,12 @@ import ma.errabi.sdk.event.EventPublisher;
 import ma.errabi.sdk.exception.EntityNotFoundException;
 import ma.errabi.sdk.exception.TechnicalException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -30,33 +29,24 @@ import java.util.List;
 
 
 @Slf4j
-@Component
+@Service
+@RequiredArgsConstructor
 public class ProductCompositeIntegration  {
     private final WebClient.Builder webClient;
-    private final String productServiceUrl;
-    private final String productReviewServiceHost;
-    private final String productRecommendationServiceHost;
     private final EventPublisher eventPublisher;
-    private final RestTemplate restTemplate ;
+    private final RestTemplate restTemplate;
 
-    public ProductCompositeIntegration(WebClient.Builder webClient, ObjectMapper objectMapper,
-                                       @Value("${app.product-service.host}") String productServiceHost,
-                                       @Value("${app.product-service.port}") int productServicePort,
-                                       @Value("${app.review-service.host}") String productReviewServiceHost,
-                                       @Value("${app.review-service.port}") int productReviewServicePort,
-                                       @Value("${app.recommendation-service.host}") String productRecommendationServiceHost,
-                                       @Value("${app.recommendation-service.port}") int productRecommendationServicePort, StreamBridge streamBridge, EventPublisher eventPublisher, RestTemplate restTemplate) {
-        this.webClient = webClient;
-        this.eventPublisher = eventPublisher;
-        this.restTemplate = restTemplate;
-        this.productServiceUrl = String.format("%s:%d", productServiceHost, productServicePort);
-        this.productReviewServiceHost = String.format("%s:%d", productReviewServiceHost, productReviewServicePort);
-        this.productRecommendationServiceHost = String.format("%s:%d", productRecommendationServiceHost, productRecommendationServicePort);
-    }
+    @Value("${app.product-service.host}")
+    private  String productServiceUrl;
+    @Value("${app.review-service.host}")
+    private  String productReviewServiceUrl;
+    @Value("${app.recommendation-service.host}")
+    private  String productRecommendationServiceUrl; ;
+
     public Mono<ProductDTO> createProduct(ProductDTO body) {
         String url = String.format("%s/product", productServiceUrl);
         log.debug("Calling create product API : {}", url);
-        return webClient.build().post().uri("http://PRODUCT-SERVICE/product")
+        return webClient.build().post().uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .retrieve()
@@ -89,7 +79,7 @@ public class ProductCompositeIntegration  {
 
 
     public Flux<ReviewDTO> getReview(String productId) {
-        String url = String.format("%s/review/%s", productReviewServiceHost, productId);
+        String url = String.format("%s/review/%s", productReviewServiceUrl, productId);
         return webClient.build().get().uri(url).retrieve().bodyToFlux(ReviewDTO.class);
     }
     public Mono<CustomPage<ProductDTO>> getAllProducts(int pageNumber, int pageSize) {
@@ -103,7 +93,7 @@ public class ProductCompositeIntegration  {
                 });
     }
     public CustomPage<RecommendationDTO> getRecommendationByProductId(String productId) {
-        String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost, productId);
+        String url = String.format("%s/recommendation/product/%s", productRecommendationServiceUrl, productId);
         log.debug("Will call the getRecommendationByProductId API on URL: {}", url);
         return webClient.build().get().uri(url)
                 .retrieve()
@@ -116,7 +106,7 @@ public class ProductCompositeIntegration  {
     }
 
     public RecommendationDTO createRecommendation(RecommendationDTO body) {
-        String url = String.format("%s/recommendation", productRecommendationServiceHost);
+        String url = String.format("%s/recommendation", productRecommendationServiceUrl);
         log.debug("Call create a recommendation API to URL: {}", url);
         return webClient.build().post().uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -146,7 +136,7 @@ public class ProductCompositeIntegration  {
                 .build();
     }
     public void deleteRecommendations(String productId) {
-        String url = String.format("%s/recommendation/product/%s", productRecommendationServiceHost,productId);
+        String url = String.format("%s/recommendation/product/%s", productRecommendationServiceUrl,productId);
         log.debug("Will call the deleteRecommendations API on URL: {}", url);
         webClient.build().delete().uri(url).retrieve().bodyToMono(Void.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
@@ -156,12 +146,12 @@ public class ProductCompositeIntegration  {
     }
 
     public ReviewDTO createReview(ReviewDTO body) {
-        String url = String.format("%s/review", productReviewServiceHost);
+        String url = String.format("%s/review", productReviewServiceUrl);
         log.info("Will post a new review to URL: {}", url);
         return restTemplate.postForObject(url, body, ReviewDTO.class);
     }
     public CustomPage<ReviewDTO> getProductReviews(String productId, int page, int pageSize) {
-        String url = String.format("%s/review/%s/product", productReviewServiceHost, productId);
+        String url = String.format("%s/review/%s/product", productReviewServiceUrl, productId);
         log.debug("Call get review by product id API on URL: {}", url);
 
         HttpHeaders headers = new HttpHeaders();
@@ -172,7 +162,7 @@ public class ProductCompositeIntegration  {
                 new ParameterizedTypeReference<CustomPage<ReviewDTO>>() {}).getBody();
     }
     public void deleteReviews(String productId) {
-        String url = String.format("%s/review/%s", productReviewServiceHost, productId);
+        String url = String.format("%s/review/%s", productReviewServiceUrl, productId);
         log.debug("Call the deleteReviews API on URL: {}", url);
         try {
             restTemplate.delete(url);

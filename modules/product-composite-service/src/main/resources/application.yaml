@@ -20,14 +20,11 @@ springdoc:
 
 app:
   product-service:
-    host: http://product-service
-    port: 8010
+    host: http://PRODUCT-SERVICE
   review-service:
-    host: http://localhost
-    port: 8001
+    host: http://REVIEW-SERVICE
   recommendation-service:
-    host: http://localhost
-    port: 8002
+    host: http://RECOMMENDATION-SERVICE
 
 api:
   common:
