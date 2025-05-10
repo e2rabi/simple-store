@@ -7,6 +7,7 @@ import ma.errabi.microservice.core.product.mapper.ProductMapper;
 import ma.errabi.sdk.api.common.CustomPage;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.exception.EntityNotFoundException;
+import ma.errabi.sdk.util.ServiceUtil;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import reactor.core.scheduler.Schedulers;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ServiceUtil  serviceUtil;
 
     public Mono<ProductDTO> createProduct(ProductDTO productDTO) {
         log.debug("Creating a new product with information: {}", productDTO);
@@ -27,6 +29,7 @@ public class ProductService {
     }
     public Mono<ProductDTO> getProductById(String productId) {
         log.debug("Getting product with ID: {}", productId);
+        log.info("Service address: {}", serviceUtil.getServiceAddress());
         return productRepository.findById(productId)
                 .map(productMapper::toDTO)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("No product found for productId: " + productId)));

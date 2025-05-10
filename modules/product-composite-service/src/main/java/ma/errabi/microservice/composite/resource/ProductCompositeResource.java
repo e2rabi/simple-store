@@ -26,6 +26,7 @@ public class ProductCompositeResource implements ProductCompositeResources {
     public Mono<ProductDTO> createProduct(@RequestBody ProductDTO body) {
         return integration.createProduct(body);
     }
+
     @DeleteMapping(value = "/product-composite/product/{productId}")
     public Mono<Void> deleteProduct(@PathVariable String productId) {
          integration.deleteProduct(productId);

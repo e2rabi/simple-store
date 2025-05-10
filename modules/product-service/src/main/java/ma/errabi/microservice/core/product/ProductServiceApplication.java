@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "ma.errabi.*")
 @RequiredArgsConstructor
 public class ProductServiceApplication implements ApplicationRunner {
 

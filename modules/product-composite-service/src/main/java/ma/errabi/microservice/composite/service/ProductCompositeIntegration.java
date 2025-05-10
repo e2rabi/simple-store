@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -68,13 +69,22 @@ public class ProductCompositeIntegration  {
                 });
     }
     public void deleteProduct(String productId) {
-        log.debug("Publish event delete product by product id {}", productId);
+        // refactor this using saga pattern
+        log.debug("Publish event delete product details by product id {}", productId);
         ProductDTO productDTO =   getProductById(productId).block();
-        assert productDTO != null;
+
+        if (productDTO == null) {
+            throw new EntityNotFoundException("Product with productId: " + productId + " not found");
+        }
         Event<String, ProductDTO> event = new Event<>(productDTO, productDTO.getProductId(), Event.Type.DELETE);
         eventPublisher.publishEvent(event);
-        // publish delete review
-        // publish delete recommendation
+
+        Event<String, RecommendationDTO> deleteRecommendationEvent = new Event<>(RecommendationDTO.builder().productId(productId).build(), productId, Event.Type.DELETE);
+        eventPublisher.publishEvent(deleteRecommendationEvent);
+
+        Event<String, ReviewDTO> deleteReviewEvent = new Event<>(ReviewDTO.builder().productId(productId).build(), productId, Event.Type.DELETE);
+        eventPublisher.publishEvent(deleteReviewEvent);
+
     }
 
 
