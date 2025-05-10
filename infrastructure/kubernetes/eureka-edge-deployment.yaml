@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka-edge-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eureka-edge-server
+  template:
+    metadata:
+      labels:
+        app: eureka-edge-server
+    spec:
+      containers:
+      - image: e2rabi11/eureka-server:latest
+        name: eureka-edge-server
+        ports:
+        - containerPort: 8761
