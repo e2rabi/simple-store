@@ -1,17 +1,42 @@
-
 server:
   port: 8000
 
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: api-gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: false
+          ignore-unknown-services: false
+          routes:
+            - id: product-composite
+              uri: lb://PRODUCT-COMPOSITE-SERVICE
+              predicates:
+                - Path=/v1/product-composite/**
+            - id: product-composite-swagger
+              uri: lb://product-composite
+              predicates:
+                - Path=/openapi/**
+          route-id-prefix: ""
+
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://127.0.0.1:8761/eureka/
     initial-instance-info-replication-interval-seconds: 0
     registry-fetch-interval-seconds: 5
   instance:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 5
     prefer-ip-address: true
+
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway.route.RouteDefinitionLocator: debug
+    org.springframework.cloud.gateway: debug
