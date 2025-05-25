@@ -42,7 +42,7 @@ public class CompositeConfig {
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
-    @Bean
+   /* @Bean
     public OpenAPI getOpenApiDocumentation() {
         return new OpenAPI()
                 .info(new Info().title(apiTitle)
@@ -59,5 +59,12 @@ public class CompositeConfig {
                 .externalDocs(new ExternalDocumentation()
                         .description(apiExternalDocDesc)
                         .url(apiExternalDocUrl));
-    }
+    }*/
+   @Bean
+   public OpenAPI customOpenAPI() {
+       return new OpenAPI().info(new Info()
+               .title("My API")
+               .version("1.0")
+               .description("Demo API with WebFlux + Springdoc"));
+   }
 }

@@ -23,17 +23,5 @@ spring:
             - Path=/openapi/**
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://127.0.0.1:8761/eureka/
-    initial-instance-info-replication-interval-seconds: 0
-    registry-fetch-interval-seconds: 5
-  instance:
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 5
-    prefer-ip-address: true
-
-logging:
-  level:
-    root: info
-    org.springframework.cloud.gateway.route.RouteDefinitionLocator: debug
-    org.springframework.cloud.gateway: debug
+    service-url:
+      defaultZone: http://eureka:8761/eureka/

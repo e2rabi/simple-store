@@ -13,6 +13,14 @@ spring:
       kafka:
         binder:
           brokers: localhost:9092
+
+#springdoc:
+#   api-docs:
+#      groups:
+#        enabled: true
+#      path: /swagger-doc/v3/api-docs
+#   swagger-ui:
+#      path: /swagger-doc/swagger-ui.html
 springdoc:
   swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
@@ -53,3 +61,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 5
     prefer-ip-address: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
