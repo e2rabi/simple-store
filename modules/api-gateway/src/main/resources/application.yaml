@@ -21,6 +21,16 @@ spring:
           uri: lb://product-composite-service
           predicates:
             - Path=/openapi/**
+        - id: eureka-web-start
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+        - id: eureka-web-others
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/**
 eureka:
   client:
     serviceUrl:
