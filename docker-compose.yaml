@@ -4,8 +4,6 @@ services:
   product-composite:
     build: ./modules/product-composite-service
     mem_limit: 512m
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
   product:
@@ -24,6 +22,13 @@ services:
   recommendation:
     build: ./modules/recommendation-service
     mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  api-gateway:
+    build: ./modules/api-gateway
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
   mongodb:
