@@ -1,4 +1,4 @@
-package ma.errabi.microservice.core.recommendation.event;
+package ma.errabi.microservice.core.recommendation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RecommendationEventConsumer {
+public class RecommendationConsumerService {
     private final RecommendationRepository recommendationRepository;
 
     @Bean

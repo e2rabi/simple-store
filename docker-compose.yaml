@@ -34,7 +34,7 @@ services:
       - SERVER_SSL_KEY_STORE=file:/keystore/edge-test.p12
       - SERVER_SSL_KEY_STORE_PASSWORD=password
     volumes:
-     - $PWD/infrastructure/docker:/keystore
+     - /Users/errabi/Desktop/simple-store/infrastructure/docker:/keystore
   mongodb:
     image: mongo:6.0.4
     mem_limit: 512m
@@ -80,6 +80,8 @@ services:
     image: tchiotludo/akhq
     restart: always
     mem_limit: 512m
+    ports:
+      - "8080:8080"
     environment:
       AKHQ_CONFIGURATION: |
         akhq:

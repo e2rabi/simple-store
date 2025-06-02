@@ -14,6 +14,17 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+  cloud:
+    stream:
+      bindings:
+        deleteReviewConsumer-in-0:
+          destination: product
+          group: product-consumer-group
+      kafka:
+        binder:
+          brokers: localhost:9092
+          consumer-properties:
+            enable.auto.commit: false
 eureka:
   client:
     serviceUrl:

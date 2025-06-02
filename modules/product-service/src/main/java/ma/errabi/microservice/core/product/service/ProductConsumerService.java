@@ -1,8 +1,7 @@
-package ma.errabi.microservice.core.product.event;
+package ma.errabi.microservice.core.product.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.errabi.microservice.core.product.service.ProductService;
 import ma.errabi.sdk.api.product.ProductDTO;
 import ma.errabi.sdk.event.Event;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +11,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ProductEventConsumer {
+public class ProductConsumerService {
     private final ProductService productRepository;
 
     @Bean
