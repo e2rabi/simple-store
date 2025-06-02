@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,8 +16,10 @@ import java.util.Optional;
 public interface RecommendationRepository extends JpaRepository<Recommendation,String> {
 
     @Modifying
+    @Transactional
     @Query("DELETE FROM Recommendation r WHERE r.productId = ?1")
     void deleteByProductId(String productId);
+
     Page<Recommendation> findByProductId(String productId, Pageable pageable);
     Optional<Recommendation> findByProductId(String productId);
 }
