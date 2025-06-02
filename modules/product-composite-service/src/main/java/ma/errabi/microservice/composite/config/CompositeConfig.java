@@ -1,21 +1,15 @@
 package ma.errabi.microservice.composite.config;
 
 
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
-import io.swagger.v3.oas.models.ExternalDocumentation;
+
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.netty.http.client.HttpClient;
 
 @Configuration
 public class CompositeConfig {
@@ -42,24 +36,7 @@ public class CompositeConfig {
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
-   /* @Bean
-    public OpenAPI getOpenApiDocumentation() {
-        return new OpenAPI()
-                .info(new Info().title(apiTitle)
-                        .description(apiDescription)
-                        .version(apiVersion)
-                        .contact(new Contact()
-                                .name(apiContactName)
-                                .url(apiContactUrl)
-                                .email(apiContactEmail))
-                        .termsOfService(apiTermsOfService)
-                        .license(new License()
-                                .name(apiLicense)
-                                .url(apiLicenseUrl)))
-                .externalDocs(new ExternalDocumentation()
-                        .description(apiExternalDocDesc)
-                        .url(apiExternalDocUrl));
-    }*/
+
    @Bean
    public OpenAPI customOpenAPI() {
        return new OpenAPI().info(new Info()

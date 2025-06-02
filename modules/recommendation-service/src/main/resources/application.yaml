@@ -19,8 +19,8 @@ spring:
     stream:
       bindings:
         deleteRecommendationConsumer-in-0:
-          destination: product
-          group: product-consumer-group
+          destination: recommendation
+          group: recommendation-consumer-group
       kafka:
         binder:
           brokers: localhost:9092

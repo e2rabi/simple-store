@@ -80,10 +80,10 @@ public class ProductCompositeIntegration  {
         eventPublisher.publishEvent(event);
 
         Event<String, RecommendationDTO> deleteRecommendationEvent = new Event<>(RecommendationDTO.builder().productId(productId).build(), productId, Event.Type.DELETE);
-        eventPublisher.publishEvent(deleteRecommendationEvent);
+        eventPublisher.publishRecommendationEvent(deleteRecommendationEvent);
 
         Event<String, ReviewDTO> deleteReviewEvent = new Event<>(ReviewDTO.builder().productId(productId).build(), productId, Event.Type.DELETE);
-        eventPublisher.publishEvent(deleteReviewEvent);
+        eventPublisher.publishReviewEvent(deleteReviewEvent);
 
     }
 

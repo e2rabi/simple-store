@@ -20,8 +20,8 @@ spring:
     stream:
       bindings:
         deleteReviewConsumer-in-0:
-          destination: product
-          group: product-consumer-group
+          destination: review
+          group: review-consumer-group
       kafka:
         binder:
           brokers: kafka

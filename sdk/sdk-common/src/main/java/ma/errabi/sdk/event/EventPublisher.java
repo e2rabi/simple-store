@@ -13,4 +13,12 @@ public class EventPublisher {
     public <K, T> void publishEvent(Event<K, T> event) {
         streamBridge.send("output-out-0", event);
     }
+
+    public <K, T> void publishReviewEvent(Event<K, T> event) {
+        streamBridge.send("output-out-1", event);
+    }
+
+    public <K, T> void publishRecommendationEvent(Event<K, T> event) {
+        streamBridge.send("output-out-2", event);
+    }
 }
