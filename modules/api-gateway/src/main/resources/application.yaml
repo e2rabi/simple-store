@@ -36,10 +36,15 @@ spring:
           uri: http://localhost:8761
           predicates:
             - Path=/eureka/**
+
+app:
+  eureka:
+    username: admin
+    password: admin
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@127.0.0.1:8761/eureka/"
     initial-instance-info-replication-interval-seconds: 0
     registry-fetch-interval-seconds: 5
   instance:

@@ -38,7 +38,9 @@ app:
     host: http://REVIEW-SERVICE
   recommendation-service:
     host: http://RECOMMENDATION-SERVICE
-
+  eureka:
+    username: admin
+    password: admin
 api:
   common:
     version: 1.0.0
@@ -57,7 +59,7 @@ api:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@127.0.0.1:8761/eureka/"
     initial-instance-info-replication-interval-seconds: 0
     registry-fetch-interval-seconds: 5
     fetch-registry: true

@@ -3,6 +3,12 @@ spring:
     name : eureka-server
 server:
   port: 8761
+
+app:
+  eureka:
+    username: admin
+    password: "{noop}admin"
+
 eureka:
   instance:
     hostname: localhost
