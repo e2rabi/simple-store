@@ -26,6 +26,21 @@ spring:
           uri: lb://product-composite-service
           predicates:
             - Path=/openapi/**
+        - id: config-server
+          uri: lb://config-server
+          predicates:
+            - Path=/config/**
+          filters: RewritePath=/config/(?<segment>.*),/$\{segment}
+        - id: eureka-web-start
+          uri: eureka
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+        - id: eureka-web-others
+          uri: eureka
+          predicates:
+            - Path=/eureka/**
 
 app:
   eureka:
