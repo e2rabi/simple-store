@@ -4,7 +4,7 @@ server:
   forward-headers-strategy: framework
 spring:
   application:
-    name: product-composite-service
+    name: product-composite
   cloud:
     stream:
       bindings:
@@ -17,14 +17,8 @@ spring:
       kafka:
         binder:
           brokers: localhost:9092
-
-#springdoc:
-#   api-docs:
-#      groups:
-#        enabled: true
-#      path: /swagger-doc/v3/api-docs
-#   swagger-ui:
-#      path: /swagger-doc/swagger-ui.html
+    config:
+      enabled: false
 springdoc:
   swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
