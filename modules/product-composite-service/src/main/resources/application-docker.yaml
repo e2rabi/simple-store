@@ -53,4 +53,4 @@ api:
 eureka:
   client:
     service-url:
-      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka:8761/eureka/
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka:8761/eureka/"

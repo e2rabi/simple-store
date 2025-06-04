@@ -99,3 +99,11 @@ services:
     mem_limit: 512m
     ports:
       - "8761:8761"
+  config-server:
+    build: ./infrastructure/config-server
+    mem_limit: 512m
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/e2rabi/config-repo.git
