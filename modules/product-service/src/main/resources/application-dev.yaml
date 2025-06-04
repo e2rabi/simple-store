@@ -3,13 +3,15 @@ server:
 
 spring:
   application:
-    name: PRODUCT-SERVICE
+    name: product-service
   data:
    mongodb:
       host: 127.0.0.1
       port: 27017
       database: product-db
   cloud:
+    config:
+      enabled: false
     stream:
       bindings:
         deleteProductConsumer-in-0:
