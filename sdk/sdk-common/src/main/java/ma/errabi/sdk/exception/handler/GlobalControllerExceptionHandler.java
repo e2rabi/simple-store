@@ -35,5 +35,11 @@ public class GlobalControllerExceptionHandler {
         return new HttpErrorInfo(HttpStatus.NOT_FOUND,request.getRequestURI(),ex.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public @ResponseBody HttpErrorInfo handleException(Exception ex, HttpServletRequest request){
+        log.error("handle generic exception: {} {}", request.getMethod(), request.getRequestURI());
+        return new HttpErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR,request.getRequestURI(),ex.getMessage());
+    }
 
 }

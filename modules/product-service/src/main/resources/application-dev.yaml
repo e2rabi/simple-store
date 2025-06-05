@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: product-service
+  config:
+      import: "configserver:"
   data:
    mongodb:
       host: 127.0.0.1
@@ -11,7 +13,16 @@ spring:
       database: product-db
   cloud:
     config:
-      enabled: false
+      fail-fast: true
+      retry:
+        initial-interval: 3000
+        multiplier: 1.3
+        max-interval: 10000
+        max-attempts: 20
+      uri: http://localhost:8888
+      enabled: true
+      username: admin
+      password: admin
     stream:
       bindings:
         deleteProductConsumer-in-0:

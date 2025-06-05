@@ -1,5 +1,7 @@
 package ma.errabi.microservice.composite.service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.sdk.api.common.CustomPage;
@@ -57,13 +59,15 @@ public class ProductCompositeIntegration  {
                     return Mono.error(new TechnicalException(ex.getMessage()));
                 });
     }
+    @CircuitBreaker(name = "productService", fallbackMethod = "fallback")
+   // @Retry(name = "productServiceRetry")
     public Mono<ProductDTO> getProductById(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.debug("Call get product by product id API on URL: {}", url);
         return webClient.build().get().uri(url)
                 .retrieve()
                 .bodyToMono(ProductDTO.class)
-                .onErrorResume(Exception.class, ex -> {
+                .onErrorResume(WebClientResponseException.NotFound.class, ex -> {
                     log.error("Product with productId: {} not found", productId);
                     return Mono.error(new EntityNotFoundException("Product with productId: " + productId + " not found"));
                 });
@@ -179,6 +183,15 @@ public class ProductCompositeIntegration  {
         } catch (HttpClientErrorException.NotFound ex) {
             log.error("Failed to delete reviews for productId: {}", productId, ex);
             throw new EntityNotFoundException("Failed to delete reviews for productId: " + productId);
+        }
+    }
+    public Mono<ProductDTO> fallback(String productId,Exception ex) {
+        if(ex instanceof EntityNotFoundException e){
+            log.error("Fallback triggered for productId: {} due to: {}", productId, e.getMessage());
+            return Mono.error(e);
+        } else {
+            log.error("Fallback triggered for productId: {} due to technical error: {}", productId, ex.getMessage());
+            return Mono.error( new Exception("Fallback response due to: " + ex.getMessage()));
         }
     }
 }
