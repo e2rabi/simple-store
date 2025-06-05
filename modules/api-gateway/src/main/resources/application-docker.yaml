@@ -15,3 +15,5 @@ spring:
         max-interval: 10000
         max-attempts: 20
       uri: http://config-server:8888
+      username: admin
+      password: admin

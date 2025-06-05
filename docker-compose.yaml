@@ -107,3 +107,5 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/e2rabi/config-repo.git
+      - SPRING_SECURITY_USER_NAME=admin
+      - SPRING_SECURITY_USER_PASSWORD={noop}admin

@@ -1,6 +1,10 @@
 spring:
   application:
     name: config-server
+  security:
+    user:
+      name: admin
+      password: "{noop}admin"
   config:
     activate:
       on-profile: docker
