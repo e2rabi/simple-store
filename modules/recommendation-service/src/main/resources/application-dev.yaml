@@ -5,6 +5,8 @@ server:
 spring:
   application:
     name: recommendation-service
+  config:
+    import: "configserver:"
   datasource:
     url: jdbc:postgresql://ep-curly-thunder-a5bovt5y.us-east-2.aws.neon.tech:5432/review?schema=recommendation
     username: review
@@ -26,6 +28,17 @@ spring:
           brokers: localhost:9092
           consumer-properties:
             enable.auto.commit: false
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 3000
+        multiplier: 1.3
+        max-interval: 10000
+        max-attempts: 20
+      uri: http://localhost:8888
+      enabled: true
+      username: admin
+      password: admin
 app:
   eureka:
     username: admin
@@ -40,3 +53,10 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 5
     prefer-ip-address: true
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans

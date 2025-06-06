@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import reactor.core.publisher.Hooks;
 
 
 @Slf4j
@@ -17,6 +18,7 @@ public class ProductServiceApplication implements ApplicationRunner {
 	private final ApplicationContext context;
 
 	public static void main(String[] args) {
+		Hooks.enableAutomaticContextPropagation();
 		 SpringApplication.run(ProductServiceApplication.class, args);
 	}
 	@Override

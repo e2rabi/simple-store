@@ -122,15 +122,7 @@ public class ProductCompositeIntegration  {
     public RecommendationDTO createRecommendation(RecommendationDTO body) {
         String url = String.format("%s/recommendation", productRecommendationServiceUrl);
         log.debug("Call create a recommendation API to URL: {}", url);
-        return webClient.build().post().uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(RecommendationDTO.class)
-                .onErrorResume(WebClientResponseException.class, ex -> {
-                    log.error("Create recommendation failed: {}", ex.toString());
-                    return Mono.error(new TechnicalException(ex.getMessage()));
-                }).block();
+        return restTemplate.postForObject(url, body, RecommendationDTO.class);
     }
 
     public ProductAggregateDTO getProductAggregate(String productId) {

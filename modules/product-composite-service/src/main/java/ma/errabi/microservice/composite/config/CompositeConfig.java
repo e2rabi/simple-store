@@ -1,17 +1,20 @@
 package ma.errabi.microservice.composite.config;
 
-
-
+import io.micrometer.tracing.Tracer;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@RequiredArgsConstructor
 public class CompositeConfig {
 
     @Value("${api.common.version}")         String apiVersion;
@@ -26,15 +29,37 @@ public class CompositeConfig {
     @Value("${api.common.contact.url}")     String apiContactUrl;
     @Value("${api.common.contact.email}")   String apiContactEmail;
 
+    private final ReactorLoadBalancerExchangeFilterFunction lbFunction;
+
     @Bean
-    @LoadBalanced
     public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();
     }
     @Bean
+    public WebClient webClient(@Qualifier("loadBalancedWebClientBuilder") WebClient.Builder builder) {
+        return builder
+                .filter(lbFunction)
+                .build();
+    }
+
+
+    @Bean
     @LoadBalanced
-    public RestTemplate getRestTemplate() {
-        return new RestTemplate();
+    public RestTemplate getRestTemplate(Tracer tracer) {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            if (tracer.currentSpan() != null) {
+                var context = tracer.currentSpan().context();
+                request.getHeaders().add("X-B3-TraceId", context.traceId());
+                request.getHeaders().add("X-B3-SpanId", context.spanId());
+                if (context.parentId() != null) {
+                   request.getHeaders().add("X-B3-ParentSpanId", context.parentId());
+                }
+                request.getHeaders().add("X-B3-Sampled", context.sampled() != null ? context.sampled().toString() : "1");
+            }
+            return execution.execute(request, body);
+        });
+        return restTemplate;
     }
 
    @Bean
