@@ -88,7 +88,7 @@ resilience4j:
     instances:
       productServiceRetry:
         maxAttempts: 3
-        waitDuration: 1s
+        waitDuration: 1000ms
 management:
   tracing:
     sampling:

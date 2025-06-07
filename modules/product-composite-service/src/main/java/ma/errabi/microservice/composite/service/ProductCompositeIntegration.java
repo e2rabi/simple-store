@@ -2,6 +2,7 @@ package ma.errabi.microservice.composite.service;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.errabi.sdk.api.common.CustomPage;
@@ -59,6 +60,7 @@ public class ProductCompositeIntegration  {
                     return Mono.error(new TechnicalException(ex.getMessage()));
                 });
     }
+    @TimeLimiter(name = "productServiceRetry")
     @CircuitBreaker(name = "productService", fallbackMethod = "fallback")
     @Retry(name = "productServiceRetry")
     public Mono<ProductDTO> getProductById(String productId) {
