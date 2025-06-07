@@ -60,7 +60,7 @@ public class ProductCompositeIntegration  {
                 });
     }
     @CircuitBreaker(name = "productService", fallbackMethod = "fallback")
-   // @Retry(name = "productServiceRetry")
+    @Retry(name = "productServiceRetry")
     public Mono<ProductDTO> getProductById(String productId) {
         String url = String.format("%s/product/%s", productServiceUrl, productId);
         log.debug("Call get product by product id API on URL: {}", url);

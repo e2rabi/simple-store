@@ -82,6 +82,8 @@ resilience4j:
         minimumNumberOfCalls: 3
         failureRateThreshold: 4
         waitDurationInOpenState: 5s
+        ignore-exceptions:
+          - ma.errabi.sdk.exception.EntityNotFoundException
   retry:
     instances:
       productServiceRetry:

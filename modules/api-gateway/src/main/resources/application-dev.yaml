@@ -31,11 +31,11 @@ spring:
           lower-case-service-id: true
       routes:
         - id: product-composite
-          uri: lb://product-composite-service
+          uri: lb://product-composite
           predicates:
             - Path=/v1/product-composite/**
         - id: product-composite-swagger
-          uri: lb://product-composite-service
+          uri: lb://product-composite
           predicates:
             - Path=/openapi/**
         - id: eureka-web-start

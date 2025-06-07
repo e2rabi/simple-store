@@ -29,19 +29,12 @@ public class CompositeConfig {
     @Value("${api.common.contact.url}")     String apiContactUrl;
     @Value("${api.common.contact.email}")   String apiContactEmail;
 
-    private final ReactorLoadBalancerExchangeFilterFunction lbFunction;
 
     @Bean
-    public WebClient.Builder loadBalancedWebClientBuilder() {
-        return WebClient.builder();
+    @LoadBalanced
+    public WebClient.Builder webClient() {
+       return WebClient.builder();
     }
-    @Bean
-    public WebClient webClient(@Qualifier("loadBalancedWebClientBuilder") WebClient.Builder builder) {
-        return builder
-                .filter(lbFunction)
-                .build();
-    }
-
 
     @Bean
     @LoadBalanced
