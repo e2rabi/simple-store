@@ -10,4 +10,5 @@ include "infrastructure:eureka-server"
 include "infrastructure:config-server"
 include "infrastructure:docker"
 include "infrastructure:kubernetes"
+include "infrastructure:spring-admin-server"
 

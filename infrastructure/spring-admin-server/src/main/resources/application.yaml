@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: Spring-admin-server
+
+server:
+  port: 8889
+
+logging:
+  level:
+    root: info

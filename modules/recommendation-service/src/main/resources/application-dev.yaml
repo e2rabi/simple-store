@@ -3,6 +3,10 @@ server:
     port: 8002
 
 spring:
+  boot:
+    admin:
+      client:
+        url: http://localhost:8889
   application:
     name: recommendation-service
   config:
@@ -60,3 +64,10 @@ management:
   zipkin:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true

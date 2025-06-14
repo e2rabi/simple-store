@@ -7,6 +7,10 @@ server:
     key-alias: localhost
 
 spring:
+  boot:
+    admin:
+      client:
+        url: http://localhost:8889
   main:
     web-application-type: reactive
   application:
@@ -61,6 +65,13 @@ management:
   zipkin:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
 app:
   eureka:
     username: admin

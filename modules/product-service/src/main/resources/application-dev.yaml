@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: product-service
+  boot:
+    admin:
+      client:
+        url: http://localhost:8889
   config:
       import: "configserver:"
   data:
@@ -55,3 +59,10 @@ management:
   zipkin:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true

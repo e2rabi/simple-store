@@ -21,8 +21,12 @@ dependencyManagement {
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'de.codecentric:spring-boot-admin-starter-client:3.1.8'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation("org.postgresql:postgresql:42.7.4")
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'

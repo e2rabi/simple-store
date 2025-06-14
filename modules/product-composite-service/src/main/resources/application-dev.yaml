@@ -3,6 +3,10 @@ server:
   port: 8010
   forward-headers-strategy: framework
 spring:
+  boot:
+    admin:
+      client:
+        url: http://localhost:8889
   application:
     name: product-composite
   config:
@@ -99,12 +103,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: "*"
+  info:
+    env:
+      enabled: true
   health:
     circuitBreakers:
       enabled: true
 logging:
   level:
+    root: INFO
     org.springframework.cloud.client.loadbalancer: DEBUG
     org.springframework.web.reactive.function.client: DEBUG
     org.springframework.cloud.netflix.eureka: DEBUG
