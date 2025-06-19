@@ -114,3 +114,8 @@ services:
     mem_limit: 512m
     ports:
       - "9411:9411"
+  metric-server:
+    build: ./infrastructure/metric-server
+    mem_limit: 512m
+    ports:
+      - "8889:8889"

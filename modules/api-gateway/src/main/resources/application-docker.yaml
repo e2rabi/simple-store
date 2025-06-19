@@ -1,5 +1,9 @@
 
 spring:
+  boot:
+    admin:
+      client:
+        url: http://metric-server:8889
   config:
     activate:
       on-profile: docker

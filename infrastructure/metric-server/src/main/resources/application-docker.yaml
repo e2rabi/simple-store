@@ -1,39 +1,10 @@
 spring:
   application:
-    name: config-server
-  security:
-    user:
-      name: admin
-      password: "{noop}admin"
-  config:
-    activate:
-      on-profile: docker
-  cloud:
-    config:
-      server:
-        git:
-          uri: https://github.com/e2rabi/config-repo.git
-          default-label: main
-server:
-  port: 8888
+    name: metric-server
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: "ALWAYS"
+server:
+  port: 8889
 
 logging:
   level:
     root: info
-app:
-  eureka:
-    username: admin
-    password: admin
-eureka:
-  client:
-    service-url:
-      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka:8761/eureka/"
