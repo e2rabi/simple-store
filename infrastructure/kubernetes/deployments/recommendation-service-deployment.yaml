@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendation-service-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation-service
+  template:
+    metadata:
+      labels:
+        type: business
+        app: recommendation-service
+    spec:
+      containers:
+      - image: e2rabi11/recommendation-service:latest
+        name: recommendation-service
+        ports:
+        - containerPort: 8083

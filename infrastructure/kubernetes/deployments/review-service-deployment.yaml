@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        type: business
+        app: review-service
+    spec:
+      containers:
+      - image: e2rabi11/review-service:latest
+        name: review-service
+        ports:
+        - containerPort: 8082

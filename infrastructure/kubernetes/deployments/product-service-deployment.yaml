@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        type: business
+        app: product-service
+    spec:
+      containers:
+      - image: e2rabi11/product-service:latest
+        name: product-service
+        ports:
+        - containerPort: 8081

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: small-store-tiers-postgres
+  namespace: dev
+  labels:
+    app: small-store-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: small-store-tiers-postgres
+  template:
+    metadata:
+      labels:
+        app: small-store-tiers-postgres
+        type: tiers
+    spec:
+      volumes:
+        - name: db-pv-storage
+          persistentVolumeClaim:
+            claimName: small-store-db-pvc-volume
+      containers:
+        - name: postgres
+          image: postgres:14.10-alpine
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: small-store-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: small-store-config
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: small-store-config
+                  key: DB_PASS
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: db-pv-storage

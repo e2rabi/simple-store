@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-server
+  template:
+    metadata:
+      labels:
+        type: config
+        app: config-server
+    spec:
+      containers:
+      - image: e2rabi11/config-server:latest
+        name: config-server
+        ports:
+        - containerPort: 8888

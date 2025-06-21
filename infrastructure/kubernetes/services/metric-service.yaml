@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metric-service
+  namespace: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: metric-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8889

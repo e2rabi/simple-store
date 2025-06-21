@@ -11,6 +11,7 @@ spec:
   template:
     metadata:
       labels:
+        type: config
         app: eureka-edge-server
     spec:
       containers:
