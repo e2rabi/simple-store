@@ -6,6 +6,10 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+      - config-server
+      - metric-server
   product:
     build: ./modules/product-service
     mem_limit: 512m
@@ -19,11 +23,19 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+      - config-server
+      - metric-server
   recommendation:
     build: ./modules/recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+      - config-server
+      - metric-server
   api-gateway:
     build: ./modules/api-gateway
     mem_limit: 512m
@@ -35,6 +47,10 @@ services:
       - SERVER_SSL_KEY_STORE_PASSWORD=password
     volumes:
      - /Users/errabi/Desktop/simple-store/infrastructure/docker:/keystore
+    depends_on:
+      - metric-server
+      - eureka
+      - config-server
   mongodb:
     image: mongo:6.0.4
     mem_limit: 512m
@@ -109,6 +125,8 @@ services:
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/e2rabi/config-repo.git
       - SPRING_SECURITY_USER_NAME=admin
       - SPRING_SECURITY_USER_PASSWORD={noop}admin
+    depends_on:
+      - eureka
   zipkin:
     image: openzipkin/zipkin
     mem_limit: 512m
@@ -119,3 +137,5 @@ services:
     mem_limit: 512m
     ports:
       - "8889:8889"
+    depends_on:
+      - eureka
