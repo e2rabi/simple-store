@@ -4,7 +4,7 @@ metadata:
   name: eureka-service
   namespace: dev
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: eureka-edge-server
   ports:

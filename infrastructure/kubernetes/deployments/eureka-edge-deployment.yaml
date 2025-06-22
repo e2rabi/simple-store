@@ -15,7 +15,7 @@ spec:
         app: eureka-edge-server
     spec:
       containers:
-      - image: e2rabi11/eureka-server:latest
+      - image: e2rabi11/simple-store-eureka-server
         name: eureka-edge-server
         ports:
         - containerPort: 8761

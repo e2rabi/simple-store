@@ -15,7 +15,10 @@ spec:
         app: review-service
     spec:
       containers:
-      - image: e2rabi11/review-service:latest
+      - image: e2rabi11/simple-store-review:latest
         name: review-service
         ports:
         - containerPort: 8082
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: docker

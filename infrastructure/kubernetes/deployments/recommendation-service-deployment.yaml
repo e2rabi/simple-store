@@ -15,7 +15,10 @@ spec:
         app: recommendation-service
     spec:
       containers:
-      - image: e2rabi11/recommendation-service:latest
+      - image: e2rabi11/simple-store-recommendation:latest
         name: recommendation-service
         ports:
         - containerPort: 8083
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: docker

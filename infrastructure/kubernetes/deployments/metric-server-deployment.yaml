@@ -15,7 +15,7 @@ spec:
         app: metric-server
     spec:
       containers:
-      - image: e2rabi11/metric-server:latest
+      - image: e2rabi11/simple-store-metric-server:latest
         name: metric-server
         ports:
         - containerPort: 8889

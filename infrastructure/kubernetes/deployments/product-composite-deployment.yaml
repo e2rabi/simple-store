@@ -15,7 +15,7 @@ spec:
         app: product-composite-service
     spec:
       containers:
-      - image: e2rabi11/product-composite-service:latest
+      - image: e2rabi11/simple-store-product-composite:latest
         name: product-composite-service
         env:
           - name: SPRING_PROFILES_ACTIVE

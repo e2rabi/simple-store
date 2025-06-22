@@ -16,15 +16,14 @@ spec:
         app: small-store-tiers-kafka
         type: tiers
     spec:
-      initContainers:
+      containers:
         - name: zookeeper
           image: confluentinc/cp-zookeeper:7.3.1
           env:
-              - name: ZOOKEEPER_CLIENT_PORT
-                value: "2181"
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
           ports:
-                - containerPort: 2181
-      containers:
+            - containerPort: 2181
         - name: small-store-tiers-kafka
           image: confluentinc/cp-kafka:7.3.1
           env:
