@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: small-store-tiers-mongodb
+  namespace: dev
+  labels:
+    app: small-store-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: small-store-tiers-mongodb
+  template:
+    metadata:
+      labels:
+        app: small-store-tiers-mongodb
+        type: tiers
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:6.0.4
+          ports:
+            - containerPort: 27017

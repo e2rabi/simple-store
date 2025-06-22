@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-composite-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-composite-service
+  template:
+    metadata:
+      labels:
+        type: business
+        app: product-composite-service
+    spec:
+      containers:
+      - image: e2rabi11/product-composite-service:latest
+        name: product-composite-service
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: docker
+        ports:
+        - containerPort: 8080

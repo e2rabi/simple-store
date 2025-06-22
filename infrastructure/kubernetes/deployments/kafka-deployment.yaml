@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: small-store-tiers-kafka
+  namespace: dev
+  labels:
+    app: small-store-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: small-store-tiers-kafka
+  template:
+    metadata:
+      labels:
+        app: small-store-tiers-kafka
+        type: tiers
+    spec:
+      initContainers:
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:7.3.1
+          env:
+              - name: ZOOKEEPER_CLIENT_PORT
+                value: "2181"
+          ports:
+                - containerPort: 2181
+      containers:
+        - name: small-store-tiers-kafka
+          image: confluentinc/cp-kafka:7.3.1
+          env:
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              valueFrom:
+                configMapKeyRef:
+                  name: small-store-config
+                  key: KAFKA_ZOOKEEPER_CONNECT
+            - name: KAFKA_ADVERTISED_LISTENERS
+              valueFrom:
+                    configMapKeyRef:
+                       name: small-store-config
+                       key: KAFKA_ADVERTISED_LISTENERS
+            - name: KAFKA_BROKER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: small-store-config
+                  key: KAFKA_BROKER_ID
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: small-store-config
+                  key: KAFKA_BROKER_ID
+          ports:
+            - containerPort: 9092
