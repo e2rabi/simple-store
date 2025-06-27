@@ -16,6 +16,7 @@ spec:
         app: small-store-tiers-mongodb
         type: tiers
     spec:
+      priorityClassName: high-priority
       containers:
         - name: mongodb
           image: mongo:6.0.4

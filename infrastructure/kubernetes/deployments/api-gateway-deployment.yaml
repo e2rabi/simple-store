@@ -22,3 +22,10 @@ spec:
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: docker
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "500m"
+          limits:
+            memory: "250Mi"
+            cpu: "1"

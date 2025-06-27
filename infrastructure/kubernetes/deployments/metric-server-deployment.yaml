@@ -19,3 +19,10 @@ spec:
         name: metric-server
         ports:
         - containerPort: 8889
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "500m"
+          limits:
+            memory: "250Mi"
+            cpu: "1"

@@ -14,8 +14,16 @@ spec:
         type: config
         app: eureka-edge-server
     spec:
+      priorityClassName: high-priority
       containers:
       - image: e2rabi11/simple-store-eureka-server
         name: eureka-edge-server
         ports:
         - containerPort: 8761
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "500m"
+          limits:
+            memory: "250Mi"
+            cpu: "1"

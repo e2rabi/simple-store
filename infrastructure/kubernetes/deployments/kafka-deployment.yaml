@@ -16,6 +16,7 @@ spec:
         app: small-store-tiers-kafka
         type: tiers
     spec:
+      priorityClassName: high-priority
       containers:
         - name: zookeeper
           image: confluentinc/cp-zookeeper:7.3.1

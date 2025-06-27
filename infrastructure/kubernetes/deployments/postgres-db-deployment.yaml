@@ -16,6 +16,7 @@ spec:
         app: small-store-tiers-postgres
         type: tiers
     spec:
+      priorityClassName: high-priority
       volumes:
         - name: db-pv-storage
           persistentVolumeClaim:
