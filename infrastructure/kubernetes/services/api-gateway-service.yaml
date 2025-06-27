@@ -9,5 +9,5 @@ spec:
     app: api-gateway-service
   ports:
     - protocol: TCP
-      port: 80
+      port: 8443
       targetPort: 8443

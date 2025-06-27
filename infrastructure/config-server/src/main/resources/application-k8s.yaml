@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: config-server
+  security:
+    user:
+      name: admin
+      password: "{noop}admin"
+  config:
+    activate:
+      on-profile: k8s
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/e2rabi/config-repo.git
+          default-label: staging
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+
+logging:
+  level:
+    root: info
+app:
+  eureka:
+    username: admin
+    password: admin
+eureka:
+  client:
+    service-url:
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka-service:8761/eureka/"
