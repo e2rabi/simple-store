@@ -1,8 +1,10 @@
 
 server:
-    port: 8002
-
+  port: 8002
+  shutdown: graceful
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
   boot:
     admin:
       client:

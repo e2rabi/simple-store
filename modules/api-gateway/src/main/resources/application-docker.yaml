@@ -1,5 +1,7 @@
 
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
   boot:
     admin:
       client:
