@@ -8,6 +8,7 @@ spring:
     admin:
       client:
         url: http://metric-service:8889
+
   application:
     name: product-composite-k8s
   config:
@@ -26,3 +27,11 @@ spring:
       enabled: true
       username: admin
       password: admin
+management:
+  endpoint:
+      health :
+        probes :
+          enabled: true
+        group:
+            readiness:
+                include: livenessState, readinessState
