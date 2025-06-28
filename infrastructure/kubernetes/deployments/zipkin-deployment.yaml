@@ -11,10 +11,8 @@ spec:
   template:
     metadata:
       labels:
-        type: tiers
         app: zipkin-server
     spec:
-      priorityClassName: high-priority
       containers:
       - image: openzipkin/zipkin
         name: zipkin-server

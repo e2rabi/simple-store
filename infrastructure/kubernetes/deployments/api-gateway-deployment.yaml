@@ -15,13 +15,13 @@ spec:
         app: api-gateway-service
     spec:
       containers:
-      - image: e2rabi11/simple-store-api-gateway
+      - image: e2rabi11/simple-store-api-gateway:latest
         name: api-gateway-service
         ports:
         - containerPort: 8443
         env:
         - name: SPRING_PROFILES_ACTIVE
-          value: docker
+          value: k8s
         resources:
           requests:
             memory: "200Mi"

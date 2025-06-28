@@ -8,6 +8,7 @@ server:
 logging:
   level:
     root: info
+
 app:
   eureka:
     username: admin
@@ -15,4 +16,4 @@ app:
 eureka:
   client:
     serviceUrl:
-      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka:8761/eureka/"
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka-service:8761/eureka/"

@@ -16,7 +16,7 @@ spec:
     spec:
       priorityClassName: high-priority
       containers:
-      - image: e2rabi11/simple-store-eureka-server
+      - image: e2rabi11/simple-store-eureka-server:latest
         name: eureka-edge-server
         ports:
         - containerPort: 8761
@@ -27,3 +27,6 @@ spec:
           limits:
             memory: "250Mi"
             cpu: "1"
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: k8s

@@ -27,3 +27,6 @@ spec:
           limits:
             memory: "250Mi"
             cpu: "1"
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: k8s

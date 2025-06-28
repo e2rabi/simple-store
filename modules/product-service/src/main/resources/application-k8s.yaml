@@ -6,7 +6,7 @@ spring:
       client:
         url: http://metric-service:8889
   application:
-    name: product-service-docker
+    name: product-service-k8s
   config:
     activate:
       on-profile: k8s
