@@ -11,7 +11,6 @@ spec:
   template:
     metadata:
       labels:
-        type: business
         app: api-gateway-service
     spec:
       containers:
@@ -24,8 +23,8 @@ spec:
           value: k8s
         resources:
           requests:
-            memory: "200Mi"
+            memory: "290Mi"
             cpu: "500m"
           limits:
-            memory: "250Mi"
+            memory: "290Mi"
             cpu: "1"
