@@ -4,6 +4,8 @@ metadata:
   name: recommendation-service-deployment
   namespace: dev
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:

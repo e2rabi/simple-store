@@ -4,6 +4,8 @@ metadata:
   name: review-service-deployment
   namespace: dev
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:

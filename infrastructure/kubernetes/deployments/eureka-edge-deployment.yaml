@@ -4,6 +4,8 @@ metadata:
   name: eureka-edge-deployment
   namespace: dev
 spec:
+  strategy:
+    type: RollingUpdate
   replicas: 1
   selector:
     matchLabels:
