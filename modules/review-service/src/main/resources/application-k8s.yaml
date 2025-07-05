@@ -4,7 +4,11 @@ spring:
   boot:
     admin:
       client:
-        url: http://metric-service:8889
+        url: "http://${METRIC_SERVICE_SERVICE_HOST}:${METRIC_SERVICE_SERVICE_PORT}"
+        instance:
+          service-base-url: "http://${REVIEW-SERVICE_SERVICE_HOST}:${REVIEW-SERVICE_SERVICE_PORT}"
+          metadata:
+            name: review-service-k8s
   application:
     name: review-service-k8s
   config:
@@ -12,6 +16,8 @@ spring:
       on-profile: k8s
     import: "configserver:"
   cloud:
+    loadbalancer:
+      enabled: false
     config:
       fail-fast: true
       retry:

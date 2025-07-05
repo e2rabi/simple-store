@@ -17,5 +17,6 @@ app:
     port: ${EUREKA_SERVICE_PORT:8761}
 eureka:
   client:
+    enabled: false
     serviceUrl:
       defaultZone: "http://${app.eureka.username}:${app.eureka.password}@${app.eureka.host}:${app.eureka.port}/eureka/"

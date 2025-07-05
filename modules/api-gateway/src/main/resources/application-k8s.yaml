@@ -5,7 +5,11 @@ spring:
   boot:
     admin:
       client:
-        url: http://metric-service:8889
+        url: "http://${METRIC_SERVICE_SERVICE_HOST}:${METRIC_SERVICE_SERVICE_PORT}"
+        instance:
+          service-base-url: "http://${API_GATEWAY_SERVICE_SERVICE_HOST}:${API_GATEWAY_SERVICE_SERVICE_PORT}"
+          metadata:
+            name: api-gateway-service
   config:
     activate:
       on-profile: k8s

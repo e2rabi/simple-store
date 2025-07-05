@@ -7,8 +7,9 @@ spring:
   boot:
     admin:
       client:
-        url: http://metric-service:8889
-
+        url: "http://${METRIC_SERVICE_SERVICE_HOST}:${METRIC_SERVICE_SERVICE_PORT}"
+        instance:
+          service-base-url: "http://${PRODUCT_COMPOSITE_SERVICE_SERVICE_HOST}:${PRODUCT_COMPOSITE_SERVICE_SERVICE_PORT}"
   application:
     name: product-composite-k8s
   config:
@@ -16,6 +17,8 @@ spring:
       on-profile: k8s
     import: "configserver:"
   cloud:
+    loadbalancer:
+      enabled: false
     config:
       fail-fast: true
       retry:
@@ -28,6 +31,7 @@ spring:
       username: admin
       password: admin
 management:
+  server:
   endpoint:
       health :
         probes :
@@ -35,3 +39,6 @@ management:
         group:
             readiness:
                 include: livenessState, readinessState
+eureka:
+  client:
+    enabled: false
