@@ -23,6 +23,22 @@ spec:
         env:
           - name: SPRING_PROFILES_ACTIVE
             value: k8s
+          - name: review-db-username
+            valueFrom:
+              secretKeyRef:
+                name: small-store-secret
+                key: review-db-username
+          - name: review-db-password
+            valueFrom:
+              secretKeyRef:
+                name: small-store-secret
+                key: review-db-password
+        envFrom:
+          - configMapRef:
+              name: small-store-config
+          - secretRef:
+              name: small-store-secret
+
         resources:
           requests:
             memory: "290Mi"
