@@ -39,7 +39,7 @@ spring:
           group: review-consumer-group
       kafka:
         binder:
-          brokers: kafka-service:9092
+          brokers: "${KAFKA_SERVICE_SERVICE_HOST}:${KAFKA_SERVICE_SERVICE_PORT}"
           consumer-properties:
             enable.auto.commit: false
 app:
@@ -50,14 +50,14 @@ eureka:
   client:
     enabled: false
     service-url:
-      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@eureka-service:8761/eureka/"
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@${EUREKA_SERVICE_SERVICE_HOST}:8761/eureka/"
 management:
   tracing:
     sampling:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: http://zipkin-service:9411/api/v2/spans
+      endpoint: "http://${ZIPKIN_SERVICE_SERVICE_HOST}:${ZIPKIN_SERVICE_SERVICE_PORT}/api/v2/spans"
   endpoints:
     web:
       exposure:
