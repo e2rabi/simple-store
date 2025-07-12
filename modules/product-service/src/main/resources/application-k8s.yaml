@@ -1,25 +1,59 @@
+server:
+  port: 8081
+  shutdown: graceful
 spring:
   lifecycle:
     timeout-per-shutdown-phase: 30s
   boot:
     admin:
       client:
-        url: http://metric-service:8889
+        url: "http://${METRIC_SERVICE_SERVICE_HOST}:${METRIC_SERVICE_SERVICE_PORT}"
+        instance:
+          service-base-url: "http://${REVIEW-SERVICE_SERVICE_HOST}:${REVIEW-SERVICE_SERVICE_PORT}"
+          metadata:
+            name: product-service
   application:
     name: product-service-k8s
+  data:
+    mongodb:
+      host: ${MONGODB_SERVICE_SERVICE_HOST}
+      port: ${MONGODB_SERVICE_SERVICE_PORT}
+      database: product-db
   config:
     activate:
       on-profile: k8s
-    import: "configserver:"
   cloud:
     config:
-      fail-fast: true
-      retry:
-        initial-interval: 3000
-        multiplier: 1.3
-        max-interval: 10000
-        max-attempts: 20
-      uri: http://config-service:8888
-      enabled: true
-      username: admin
-      password: admin
+      enabled: false
+    loadbalancer:
+      enabled: false
+    stream:
+      bindings:
+        deleteProductConsumer-in-0:
+          destination: product
+          group: product-consumer-group
+      kafka:
+        binder:
+          brokers: "${KAFKA_SERVICE_SERVICE_HOST}:${KAFKA_SERVICE_SERVICE_PORT}"
+          consumer-properties:
+            enable.auto.commit: false
+app:
+  eureka:
+    username: ${EUREKA_USERNAME}
+    password: ${EUREKA_PASSWORD}
+eureka:
+  client:
+    enabled: false
+    service-url:
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@${EUREKA_SERVICE_SERVICE_HOST}:8761/eureka/"
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: "http://${ZIPKIN_SERVICE_SERVICE_HOST}:${ZIPKIN_SERVICE_SERVICE_PORT}/api/v2/spans"
+  endpoints:
+    web:
+      exposure:
+        include: "*"

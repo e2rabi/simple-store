@@ -13,7 +13,6 @@ spec:
   template:
     metadata:
       labels:
-        type: business
         app: product-service
     spec:
       containers:
@@ -23,11 +22,11 @@ spec:
         - containerPort: 8081
         env:
           - name: SPRING_PROFILES_ACTIVE
-            value: docker
+            value: k8s
         resources:
           requests:
-            memory: "200Mi"
+            memory: "290Mi"
             cpu: "500m"
           limits:
-            memory: "250Mi"
+            memory: "350Mi"
             cpu: "1"

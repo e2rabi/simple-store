@@ -4,4 +4,3 @@ metadata:
   name: dev
   labels:
     name: dev
-    istio-injection: enabled
