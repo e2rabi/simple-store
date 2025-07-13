@@ -23,11 +23,21 @@ spec:
         - containerPort: 8083
         env:
           - name: SPRING_PROFILES_ACTIVE
-            value: docker
+            value: k8s
+          - name: recommendation-db-username
+            valueFrom:
+              secretKeyRef:
+                name: small-store-secret
+                key: recommendation-db-username
+          - name: recommendation-db-password
+            valueFrom:
+              secretKeyRef:
+                name: small-store-secret
+                key: recommendation-db-password
         resources:
           requests:
-            memory: "200Mi"
+            memory: "290Mi"
             cpu: "500m"
           limits:
-            memory: "250Mi"
+            memory: "350Mi"
             cpu: "1"

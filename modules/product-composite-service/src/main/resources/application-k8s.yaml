@@ -1,6 +1,6 @@
 server:
-  shutdown: graceful
   port: 8080
+  shutdown: graceful
 spring:
   lifecycle:
     timeout-per-shutdown-phase: 30s
@@ -10,35 +10,100 @@ spring:
         url: "http://${METRIC_SERVICE_SERVICE_HOST}:${METRIC_SERVICE_SERVICE_PORT}"
         instance:
           service-base-url: "http://${PRODUCT_COMPOSITE_SERVICE_SERVICE_HOST}:${PRODUCT_COMPOSITE_SERVICE_SERVICE_PORT}"
+          metadata:
+            name: product-composite-service
   application:
-    name: product-composite-k8s
+    name: product-composite
   config:
     activate:
       on-profile: k8s
-    import: "configserver:"
   cloud:
+    config:
+      enabled: false
     loadbalancer:
       enabled: false
-    config:
-      fail-fast: true
-      retry:
-        initial-interval: 3000
-        multiplier: 1.3
-        max-interval: 10000
-        max-attempts: 20
-      uri: http://config-service:8888
-      enabled: true
-      username: admin
-      password: admin
-management:
-  server:
-  endpoint:
-      health :
-        probes :
-          enabled: true
-        group:
-            readiness:
-                include: livenessState, readinessState
+    stream:
+      bindings:
+        output-out-0:
+          destination: product
+        output-out-1:
+          destination: review
+        output-out-2:
+          destination: recommendation
+      kafka:
+        binder:
+          brokers: "${KAFKA_SERVICE_SERVICE_HOST}:${KAFKA_SERVICE_SERVICE_PORT}"
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: ma.errabi.microservice.composite
+  pathsToMatch: /**
+
+app:
+  product-service:
+    host: "http://${PRODUCT_SERVICE_SERVICE_HOST}:${PRODUCT_SERVICE_SERVICE_PORT}"
+  review-service:
+    host: "http://${REVIEW_SERVICE_SERVICE_HOST}:${REVIEW_SERVICE_SERVICE_PORT}"
+  recommendation-service:
+    host: "http://${RECOMMENDATION_SERVICE_SERVICE_HOST}:${RECOMMENDATION_SERVICE_SERVICE_PORT}"
+  eureka:
+    username: admin
+    password: admin
+
+api:
+  common:
+    version: 1.0.0
+    title: Sample API
+    description: Description of the API...
+    termsOfService: MY TERMS OF SERVICE
+    license: MY LICENSE
+    licenseUrl: MY LICENSE URL
+    externalDocDesc: MY WIKI PAGE
+    externalDocUrl: MY WIKI URL
+    contact:
+      name: NAME OF CONTACT
+      url: URL TO CONTACT
+      email: contact@mail.com
 eureka:
   client:
     enabled: false
+    service-url:
+      defaultZone: "http://${app.eureka.username}:${app.eureka.password}@${EUREKA_SERVICE_SERVICE_HOST}:8761/eureka/"
+resilience4j:
+  circuitbreaker:
+    instances:
+      productService:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 4
+        waitDurationInOpenState: 5s
+        ignore-exceptions:
+          - ma.errabi.sdk.exception.EntityNotFoundException
+  retry:
+    instances:
+      productServiceRetry:
+        maxAttempts: 3
+        waitDuration: 1s
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: "http://${ZIPKIN_SERVICE_SERVICE_HOST}:${ZIPKIN_SERVICE_SERVICE_PORT}/api/v2/spans"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info:
+    env:
+      enabled: true
+  health:
+    circuitBreakers:
+      enabled: true
+logging:
+  level:
+    org.springframework.cloud.client.loadbalancer: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
+    org.springframework.cloud.netflix.eureka: DEBUG
