@@ -15,6 +15,8 @@ spec:
       labels:
         app: api-gateway-service
     spec:
+      securityContext:
+        runAsUser: 1000
       containers:
       - image: e2rabi11/simple-store-api-gateway:latest
         name: api-gateway-service
