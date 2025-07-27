@@ -18,6 +18,9 @@ spec:
         app: small-store-tiers-mongodb
         type: tiers
     spec:
+      securityContext:
+        runAsUser: 1000
+      automountServiceAccountToken: false # Disable automating of default service account token
       priorityClassName: high-priority
       containers:
         - name: mongodb

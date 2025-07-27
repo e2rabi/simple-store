@@ -16,7 +16,10 @@ spec:
         type: config
         app: config-server
     spec:
+      securityContext:
+        runAsUser: 1000
       priorityClassName: high-priority
+      automountServiceAccountToken: false # Disable automating of default service account token
       containers:
       - image: e2rabi11/simple-store-config-server:latest
         name: config-server

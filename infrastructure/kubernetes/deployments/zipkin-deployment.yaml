@@ -15,6 +15,9 @@ spec:
       labels:
         app: zipkin-server
     spec:
+      securityContext:
+        runAsUser: 1000
+      automountServiceAccountToken: false # Disable automating of default service account token
       containers:
       - image: openzipkin/zipkin
         name: zipkin-server

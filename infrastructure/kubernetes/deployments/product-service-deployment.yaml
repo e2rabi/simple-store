@@ -15,6 +15,9 @@ spec:
       labels:
         app: product-service
     spec:
+      securityContext:
+        runAsUser: 1000
+      automountServiceAccountToken: false # Disable automating of default service account token
       containers:
       - image: e2rabi11/simple-store-product:latest
         name: product-service

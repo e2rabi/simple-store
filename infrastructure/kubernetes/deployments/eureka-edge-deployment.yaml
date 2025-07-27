@@ -16,6 +16,9 @@ spec:
         type: config
         app: eureka-edge-server
     spec:
+      securityContext:
+        runAsUser: 1000
+      automountServiceAccountToken: false # Disable automating of default service account token
       priorityClassName: high-priority
       containers:
       - image: e2rabi11/simple-store-eureka-server:latest
