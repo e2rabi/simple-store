@@ -1,0 +1,11 @@
+apiVersion: audit.k8s.io/v1
+kind: Policy
+metadata:
+    name: pods-audit-policy
+    namespace: dev
+rules:
+   - level: Request
+     verbs: ["get", "list","delete", "watch"]
+     resources:
+        - group: ""
+          resources: ["pods"]
