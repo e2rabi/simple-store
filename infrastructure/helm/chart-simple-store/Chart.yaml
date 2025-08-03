@@ -1,0 +1,9 @@
+apiVersion: v2
+name: chart-simple-store
+description: A Helm chart for a simple store application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Ayoub Errabi
+    email:   "errabi.ayoube@gmail.com"
