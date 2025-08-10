@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service-deployment
+  namespace: staging
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      securityContext:
+        runAsUser: 1000
+      automountServiceAccountToken: false # Disable automating of default service account token
+      containers:
+        - image: e2rabi11/simple-store-product:latest
+          name: product-service
+          ports:
+            - containerPort: 7081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+          resources:
+            requests:
+              memory: "295Mi"
+              cpu: "500m"
+            limits:
+              memory: "350Mi"
+              cpu: "1"
